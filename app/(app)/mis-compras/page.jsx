@@ -1,129 +1,229 @@
 'use client';
-
 import { useState, useEffect, useCallback } from 'react';
-import StatCard from '@/components/ui/StatCard';
-import TablaCompras from '@/components/tables/TablaCompras';
-import ModalDetalle from '@/components/modals/ModalDetalle';
-import { fmt } from '@/lib/utils';
 
-/**
- * MisComprasPage — historial personal de compras del usuario logueado.
- *
- * Funcionalidades:
- *   - Tabs de período: Hoy / Esta Semana / Este Mes / Todo
- *   - Tarjetas de estadísticas: total gastado, # compras, facturado vs no facturado
- *   - Tabla de compras con badges y botón de detalle
- *   - Modal de detalle con info completa + devolución
- */
-
-const PERIODOS = [
+const FILTROS = [
   { key: 'dia', label: 'Hoy' },
-  { key: 'semana', label: 'Esta Semana' },
-  { key: 'mes', label: 'Este Mes' },
+  { key: 'semana', label: 'Semana' },
+  { key: 'mes', label: 'Mes' },
   { key: 'todo', label: 'Todo' },
 ];
 
+function fmt(n) {
+  return 'Bs. ' + Number(n).toFixed(2);
+}
+function fmtFecha(iso) {
+  return new Date(iso).toLocaleDateString('es-BO', { day: '2-digit', month: '2-digit', year: 'numeric' });
+}
+function fmtFechaHora(iso) {
+  const d = new Date(iso);
+  return d.toLocaleDateString('es-BO', { day: '2-digit', month: '2-digit', year: 'numeric' }) +
+    ' ' + d.toLocaleTimeString('es-BO', { hour: '2-digit', minute: '2-digit' });
+}
+
+function StatCard({ icon, label, valor }) {
+  return (
+    <div className="bg-white rounded-xl border border-slate-200 p-4">
+      <div className="text-xl mb-1">{icon}</div>
+      <div className="text-[11px] font-semibold text-slate-400 uppercase tracking-wide">{label}</div>
+      <div className="text-lg font-bold text-slate-900 mt-0.5">{valor}</div>
+    </div>
+  );
+}
+
 export default function MisComprasPage() {
-  const [periodo, setPeriodo] = useState('todo');
+  const [filtro, setFiltro] = useState('dia');
   const [compras, setCompras] = useState([]);
   const [cargando, setCargando] = useState(true);
-  const [compraDetalle, setCompraDetalle] = useState(null);
-  const [detalleCompleto, setDetalleCompleto] = useState(null);
-  const [cargandoDetalle, setCargandoDetalle] = useState(false);
+  const [error, setError] = useState('');
+  const [seleccionada, setSeleccionada] = useState(null);
+  const [imagenGrande, setImagenGrande] = useState(null);
 
   const cargarCompras = useCallback(async () => {
     setCargando(true);
+    setError('');
     try {
-      const res = await fetch(`/api/compras?periodo=${periodo}`);
+      const res = await fetch(`/api/compras?periodo=${filtro}`);
       const data = await res.json();
-      setCompras(data.compras || []);
-    } catch {
-      setCompras([]);
+      if (!res.ok) throw new Error(data.error || 'Error al cargar');
+      setCompras(data.compras);
+    } catch (err) {
+      setError(err.message);
     }
     setCargando(false);
-  }, [periodo]);
+  }, [filtro]);
 
-  useEffect(() => {
-    cargarCompras();
-  }, [cargarCompras]);
+  useEffect(() => { cargarCompras(); }, [cargarCompras]);
 
-  // Cargar detalle completo con JOIN a devoluciones
-  async function verDetalle(compra) {
-    setCompraDetalle(compra);
-    setCargandoDetalle(true);
-    try {
-      const res = await fetch(`/api/compras/${compra.id}`);
-      const data = await res.json();
-      setDetalleCompleto(data.compra || compra);
-    } catch {
-      setDetalleCompleto(compra);
-    }
-    setCargandoDetalle(false);
-  }
-
-  function cerrarDetalle() {
-    setCompraDetalle(null);
-    setDetalleCompleto(null);
-  }
-
-  // Estadísticas calculadas del período actual
-  const totalGastado = compras.reduce((sum, c) => sum + Number(c.precio), 0);
-  const totalCompras = compras.length;
-  const totalFacturado = compras.filter(c => c.tiene_factura).reduce((sum, c) => sum + Number(c.precio), 0);
-  const totalDevuelto = compras.filter(c => c.devuelto).reduce((sum, c) => sum + Number(c.precio), 0);
+  const totalGastado = compras.reduce((a, c) => a + (c.devuelto ? 0 : Number(c.precio)), 0);
+  const totalDevueltas = compras.filter(c => c.devuelto).length;
+  const totalDevuelto = compras.filter(c => c.devuelto).reduce((a, c) => a + Number(c.precio), 0);
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-slate-900 mb-1">Mis Compras</h1>
-      <p className="text-slate-500 text-sm mb-6">Historial de compras registradas por ti</p>
-
-      {/* Tabs de período */}
-      <div className="flex gap-1 mb-6 bg-slate-100 rounded-lg p-1 w-fit">
-        {PERIODOS.map((p) => (
-          <button
-            key={p.key}
-            onClick={() => setPeriodo(p.key)}
-            className={`px-4 py-2 rounded-md text-sm font-medium transition-all
-              ${periodo === p.key
-                ? 'bg-white text-slate-900 shadow-sm'
-                : 'text-slate-500 hover:text-slate-700'
+      <div className="flex items-center justify-between flex-wrap gap-3 mb-6">
+        <div>
+          <h1 className="text-2xl font-bold text-slate-900">Mis Compras</h1>
+          <p className="text-slate-500 text-sm">Historial personal de compras</p>
+        </div>
+        <div className="flex gap-2">
+          {FILTROS.map(f => (
+            <button
+              key={f.key}
+              onClick={() => setFiltro(f.key)}
+              className={`px-4 py-1.5 rounded-lg text-sm font-medium transition ${
+                filtro === f.key ? 'bg-blue-600 text-white' : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
               }`}
-          >
-            {p.label}
-          </button>
-        ))}
+            >
+              {f.label}
+            </button>
+          ))}
+        </div>
       </div>
 
-      {/* Stat Cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-        <StatCard titulo="Total gastado" valor={fmt(totalGastado)} icono="💰" color="blue" />
-        <StatCard titulo="Compras" valor={totalCompras} icono="🛒" color="green" />
-        <StatCard titulo="Facturado" valor={fmt(totalFacturado)} icono="📄" color="violet" />
-        <StatCard titulo="Devuelto" valor={fmt(totalDevuelto)} icono="↩" color="amber" />
+      {error && <div className="mb-4 p-3 rounded-lg bg-red-100 text-red-600 text-sm">{error}</div>}
+
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-5">
+        <StatCard icon="📦" label="Compras" valor={compras.length} />
+        <StatCard icon="💰" label="Total gastado" valor={fmt(totalGastado)} />
+        <StatCard icon="🔄" label="Devoluciones" valor={totalDevueltas} />
+        <StatCard icon="💸" label="Total devuelto" valor={fmt(totalDevuelto)} />
       </div>
 
-      {/* Tabla de compras */}
       <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
         {cargando ? (
-          <div className="flex items-center justify-center py-16">
-            <div className="text-slate-400 text-sm">Cargando compras...</div>
+          <div className="p-12 text-center text-slate-400">Cargando...</div>
+        ) : compras.length === 0 ? (
+          <div className="p-12 text-center text-slate-400">
+            <div className="text-4xl mb-3">📭</div>
+            <p className="font-medium">No hay compras en este período</p>
           </div>
         ) : (
-          <TablaCompras compras={compras} onVerDetalle={verDetalle} />
+          <div className="overflow-x-auto">
+            <table className="w-full border-collapse">
+              <thead>
+                <tr className="bg-slate-50 border-b-2 border-slate-200 text-left">
+                  <th className="px-4 py-3 text-[11px] font-semibold text-slate-500 uppercase">Producto</th>
+                  <th className="px-4 py-3 text-[11px] font-semibold text-slate-500 uppercase">Precio</th>
+                  <th className="px-4 py-3 text-[11px] font-semibold text-slate-500 uppercase">Factura</th>
+                  <th className="px-4 py-3 text-[11px] font-semibold text-slate-500 uppercase">Pago</th>
+                  <th className="px-4 py-3 text-[11px] font-semibold text-slate-500 uppercase">Estado</th>
+                  <th className="px-4 py-3 text-[11px] font-semibold text-slate-500 uppercase">Fecha</th>
+                  <th className="px-4 py-3"></th>
+                </tr>
+              </thead>
+              <tbody>
+                {compras.map(c => (
+                  <tr key={c.id} className="border-b border-slate-100 hover:bg-slate-50">
+                    <td className="px-4 py-3">
+                      <div className="font-semibold text-slate-900 text-sm">{c.producto}</div>
+                      {c.descripcion && <div className="text-xs text-slate-500 mt-0.5">{c.descripcion}</div>}
+                    </td>
+                    <td className="px-4 py-3 font-bold text-slate-900 whitespace-nowrap">{fmt(c.precio)}</td>
+                    <td className="px-4 py-3">
+                      <span className={`inline-flex px-2.5 py-0.5 rounded-full text-xs font-semibold ${c.tiene_factura ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'}`}>
+                        {c.tiene_factura ? '✅ Con factura' : '❌ Sin factura'}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3">
+                      <span className="inline-flex px-2.5 py-0.5 rounded-full text-xs font-semibold bg-blue-100 text-blue-700">
+                        {c.tipo_pago === 'qr' ? '📱 QR' : '💵 Físico'}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3">
+                      {c.devuelto
+                        ? <span className="inline-flex px-2.5 py-0.5 rounded-full text-xs font-semibold bg-red-100 text-red-600">🔄 Devuelto</span>
+                        : <span className="inline-flex px-2.5 py-0.5 rounded-full text-xs font-semibold bg-slate-100 text-slate-500">Activo</span>}
+                    </td>
+                    <td className="px-4 py-3 text-sm text-slate-500 whitespace-nowrap">{fmtFecha(c.fecha)}</td>
+                    <td className="px-4 py-3">
+                      <button
+                        onClick={() => setSeleccionada(c)}
+                        className="px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-200 text-slate-700 hover:bg-slate-300"
+                      >
+                        Ver
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         )}
       </div>
 
-      {/* Modal de detalle */}
-      {compraDetalle && (
-        cargandoDetalle ? (
-          <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center">
-            <div className="bg-white rounded-xl p-8 shadow-2xl text-slate-500 text-sm">
-              Cargando detalle...
+      {/* Modal de detalle — se extraerá a components/modals/ModalDetalle.jsx más adelante */}
+      {seleccionada && (
+        <div
+          className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
+          onClick={(e) => { if (e.target === e.currentTarget) setSeleccionada(null); }}
+        >
+          <div className="bg-white rounded-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto p-6">
+            <div className="flex justify-between items-center mb-5">
+              <h3 className="text-lg font-bold text-slate-900">Detalle de Compra</h3>
+              <button onClick={() => setSeleccionada(null)} className="text-slate-400 hover:text-slate-600 text-xl">✕</button>
+            </div>
+            <div className="grid gap-3">
+              <div className="grid grid-cols-2 gap-3">
+                <div className="bg-slate-50 rounded-lg p-3">
+                  <div className="text-[11px] text-slate-400 font-semibold uppercase mb-1">Producto</div>
+                  <div className="font-bold text-slate-900">{seleccionada.producto}</div>
+                </div>
+                <div className="bg-slate-50 rounded-lg p-3">
+                  <div className="text-[11px] text-slate-400 font-semibold uppercase mb-1">Precio</div>
+                  <div className="font-bold text-slate-900 text-lg">{fmt(seleccionada.precio)}</div>
+                </div>
+              </div>
+              {seleccionada.descripcion && (
+                <div className="bg-slate-50 rounded-lg p-3">
+                  <div className="text-[11px] text-slate-400 font-semibold uppercase mb-1">Descripción</div>
+                  <div className="text-slate-700 text-sm">{seleccionada.descripcion}</div>
+                </div>
+              )}
+              <div className="bg-slate-50 rounded-lg p-3">
+                <div className="text-[11px] text-slate-400 font-semibold uppercase mb-1">Fecha</div>
+                <div className="text-slate-700 text-sm">{fmtFechaHora(seleccionada.fecha)}</div>
+              </div>
+              {seleccionada.foto_factura && (
+                <div>
+                  <div className="text-sm font-semibold text-slate-700 mb-1.5">📄 Foto de factura</div>
+                  <img
+                    src={seleccionada.foto_factura}
+                    alt="Factura"
+                    className="max-h-44 rounded-lg border border-slate-200 cursor-zoom-in"
+                    onClick={() => setImagenGrande(seleccionada.foto_factura)}
+                  />
+                </div>
+              )}
+              {seleccionada.foto_qr && (
+                <div>
+                  <div className="text-sm font-semibold text-slate-700 mb-1.5">📱 Comprobante QR</div>
+                  <img
+                    src={seleccionada.foto_qr}
+                    alt="Comprobante"
+                    className="max-h-44 rounded-lg border border-slate-200 cursor-zoom-in"
+                    onClick={() => setImagenGrande(seleccionada.foto_qr)}
+                  />
+                </div>
+              )}
+              {seleccionada.devuelto && (
+                <div className="border border-red-200 rounded-lg p-3 bg-red-50">
+                  <div className="text-sm font-bold text-red-600">🔄 Esta compra fue devuelta</div>
+                  <p className="text-xs text-slate-500 mt-1">El detalle completo de la devolución se mostrará aquí cuando construyamos esa sección.</p>
+                </div>
+              )}
             </div>
           </div>
-        ) : (
-          <ModalDetalle compra={detalleCompleto} onClose={cerrarDetalle} />
-        )
+        </div>
+      )}
+
+      {/* Zoom de imagen */}
+      {imagenGrande && (
+        <div
+          className="fixed inset-0 bg-black/85 z-[60] flex items-center justify-center p-4"
+          onClick={() => setImagenGrande(null)}
+        >
+          <img src={imagenGrande} alt="" className="max-w-full max-h-[85vh] rounded-xl object-contain" />
+        </div>
       )}
     </div>
   );

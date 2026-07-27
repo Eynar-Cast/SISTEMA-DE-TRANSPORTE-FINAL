@@ -8,6 +8,9 @@ export async function GET(request) {
 
   const { searchParams } = new URL(request.url);
   const periodo = searchParams.get('periodo') || 'todo';
+  const userId = searchParams.get('userId') || '';
+  const desde = searchParams.get('desde') || '';
+  const hasta = searchParams.get('hasta') || '';
 
   let sql = 'SELECT * FROM compras WHERE 1=1';
   const params = [];
@@ -15,10 +18,19 @@ export async function GET(request) {
   if (sesion.role !== 'admin') {
     params.push(sesion.id);
     sql += ` AND user_id = $${params.length}`;
+  } else if (userId) {
+    params.push(userId);
+    sql += ` AND user_id = $${params.length}`;
   }
-  if (periodo === 'dia') sql += " AND fecha >= date_trunc('day', now())";
-  if (periodo === 'semana') sql += " AND fecha >= date_trunc('week', now())";
-  if (periodo === 'mes') sql += " AND fecha >= date_trunc('month', now())";
+
+  if (desde || hasta) {
+    if (desde) { params.push(desde); sql += ` AND fecha >= $${params.length}::date`; }
+    if (hasta) { params.push(hasta); sql += ` AND fecha < ($${params.length}::date + interval '1 day')`; }
+  } else {
+    if (periodo === 'dia') sql += " AND fecha >= date_trunc('day', now())";
+    if (periodo === 'semana') sql += " AND fecha >= date_trunc('week', now())";
+    if (periodo === 'mes') sql += " AND fecha >= date_trunc('month', now())";
+  }
 
   sql += ' ORDER BY fecha DESC';
 

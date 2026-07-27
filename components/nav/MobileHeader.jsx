@@ -1,80 +1,57 @@
 'use client';
-
 import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import LogoutButton from './LogoutButton';
 
-/**
- * MobileHeader — header fijo con menú hamburguesa para pantallas < md.
- *
- * En desktop está oculto (hidden md:...) porque se usa el Sidebar.
- *
- * Props:
- *   items   – array de { href, label, icon }
- *   nombre  – nombre del usuario logueado
- */
-
 export default function MobileHeader({ items, nombre }) {
   const [abierto, setAbierto] = useState(false);
   const pathname = usePathname();
 
-  function cerrar() {
-    setAbierto(false);
-  }
-
   return (
-    <div className="md:hidden">
-      {/* Header fijo superior */}
-      <header className="fixed top-0 left-0 right-0 z-40 bg-slate-900 text-white flex items-center justify-between px-4 h-14">
-        <span className="font-bold">GestorCompras</span>
-        <button
-          onClick={() => setAbierto(!abierto)}
-          className="p-2 rounded-lg hover:bg-white/10 transition"
-          aria-label={abierto ? 'Cerrar menú' : 'Abrir menú'}
-        >
-          {abierto ? '✕' : '☰'}
-        </button>
-      </header>
+    <>
+      <div className="md:hidden flex items-center justify-between bg-slate-900 text-white px-4 py-3 print:hidden">
+        <div className="flex items-center gap-2">
+          <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-sm">🏭</div>
+          <span className="font-bold text-sm">GestorCompras</span>
+        </div>
+        <button onClick={() => setAbierto(true)} className="text-2xl leading-none px-1">☰</button>
+      </div>
 
-      {/* Spacer para compensar el header fijo */}
-      <div className="h-14" />
-
-      {/* Overlay + menú desplegable */}
       {abierto && (
-        <>
-          <div
-            className="fixed inset-0 z-40 bg-black/40"
-            onClick={cerrar}
-          />
-          <nav className="fixed top-14 left-0 right-0 z-50 bg-slate-900 border-t border-white/10 shadow-xl">
-            <div className="px-4 py-2 border-b border-white/10">
-              <p className="text-xs text-slate-500">{nombre}</p>
+        <div className="fixed inset-0 z-50 md:hidden">
+          <div className="absolute inset-0 bg-black/50" onClick={() => setAbierto(false)} />
+          <div className="absolute left-0 top-0 bottom-0 w-64 bg-slate-900 text-slate-300 flex flex-col">
+            <div className="p-5 border-b border-white/10 flex items-center justify-between">
+              <div>
+                <div className="font-bold text-white">GestorCompras</div>
+                <div className="text-xs text-slate-500">{nombre}</div>
+              </div>
+              <button onClick={() => setAbierto(false)} className="text-white text-xl">✕</button>
             </div>
-            {items.map((i) => {
-              const activo = pathname === i.href;
-              return (
-                <Link
-                  key={i.href}
-                  href={i.href}
-                  onClick={cerrar}
-                  className={`flex items-center gap-2 px-4 py-3 text-sm transition-colors
-                    ${activo
-                      ? 'bg-blue-600/20 text-blue-400 font-medium'
-                      : 'text-slate-300 hover:bg-white/10 hover:text-white'
+            <nav className="p-3 flex-1 overflow-y-auto">
+              {items.map(i => {
+                const activo = pathname.startsWith(i.href);
+                return (
+                  <Link
+                    key={i.href}
+                    href={i.href}
+                    onClick={() => setAbierto(false)}
+                    className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm mb-1 ${
+                      activo ? 'bg-blue-600/25 text-blue-400' : 'hover:bg-white/10 hover:text-white'
                     }`}
-                >
-                  <span>{i.icon}</span>
-                  <span>{i.label}</span>
-                </Link>
-              );
-            })}
-            <div className="px-4 py-3 border-t border-white/10">
+                  >
+                    <span>{i.icon}</span><span>{i.label}</span>
+                  </Link>
+                );
+              })}
+            </nav>
+            <div className="p-3 border-t border-white/10">
               <LogoutButton />
             </div>
-          </nav>
-        </>
+          </div>
+        </div>
       )}
-    </div>
+    </>
   );
 }
