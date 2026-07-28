@@ -37,11 +37,11 @@ export default async function AppLayout({ children }) {
       <Sidebar items={items} nombre={nombre} />
 
       {/* Contenido principal */}
-      <div className="flex-1 flex flex-col min-h-screen">
+      <div className="flex-1 flex flex-col min-h-screen min-w-0">
         {/* Mobile header */}
         <MobileHeader items={items} nombre={nombre} />
 
-        <main className="flex-1 p-4 md:p-6">{children}</main>
+        <main className="flex-1 p-4 md:p-6 min-w-0 overflow-x-hidden">{children}</main>
       </div>
     </div>
   );
