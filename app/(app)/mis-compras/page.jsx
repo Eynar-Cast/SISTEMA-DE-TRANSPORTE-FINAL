@@ -35,7 +35,10 @@ export default function MisComprasPage() {
   const [compras, setCompras] = useState([]);
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState('');
-  const [seleccionada, setSeleccionada] = useState(null);
+
+  const [detalle, setDetalle] = useState(null);
+  const [cargandoDetalle, setCargandoDetalle] = useState(false);
+  const [errorDetalle, setErrorDetalle] = useState('');
   const [imagenGrande, setImagenGrande] = useState(null);
 
   const cargarCompras = useCallback(async () => {
@@ -54,6 +57,21 @@ export default function MisComprasPage() {
 
   useEffect(() => { cargarCompras(); }, [cargarCompras]);
 
+  async function verDetalle(id) {
+    setErrorDetalle('');
+    setCargandoDetalle(true);
+    setDetalle({ id }); // abre el modal ya en estado de carga
+    try {
+      const res = await fetch(`/api/compras/${id}`);
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'No se pudo cargar el detalle');
+      setDetalle(data.compra);
+    } catch (err) {
+      setErrorDetalle(err.message);
+    }
+    setCargandoDetalle(false);
+  }
+
   const totalGastado = compras.reduce((a, c) => a + (c.devuelto ? 0 : Number(c.precio)), 0);
   const totalDevueltas = compras.filter(c => c.devuelto).length;
   const totalDevuelto = compras.filter(c => c.devuelto).reduce((a, c) => a + Number(c.precio), 0);
@@ -65,7 +83,7 @@ export default function MisComprasPage() {
           <h1 className="text-2xl font-bold text-slate-900">Mis Compras</h1>
           <p className="text-slate-500 text-sm">Historial personal de compras</p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-2 flex-wrap">
           {FILTROS.map(f => (
             <button
               key={f.key}
@@ -137,7 +155,7 @@ export default function MisComprasPage() {
                     <td className="px-4 py-3 text-sm text-slate-500 whitespace-nowrap">{fmtFecha(c.fecha)}</td>
                     <td className="px-4 py-3">
                       <button
-                        onClick={() => setSeleccionada(c)}
+                        onClick={() => verDetalle(c.id)}
                         className="px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-200 text-slate-700 hover:bg-slate-300"
                       >
                         Ver
@@ -151,67 +169,92 @@ export default function MisComprasPage() {
         )}
       </div>
 
-      {/* Modal de detalle — se extraerá a components/modals/ModalDetalle.jsx más adelante */}
-      {seleccionada && (
+      {/* Modal de detalle */}
+      {detalle && (
         <div
           className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
-          onClick={(e) => { if (e.target === e.currentTarget) setSeleccionada(null); }}
+          onClick={(e) => { if (e.target === e.currentTarget) setDetalle(null); }}
         >
           <div className="bg-white rounded-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto p-6">
             <div className="flex justify-between items-center mb-5">
               <h3 className="text-lg font-bold text-slate-900">Detalle de Compra</h3>
-              <button onClick={() => setSeleccionada(null)} className="text-slate-400 hover:text-slate-600 text-xl">✕</button>
+              <button onClick={() => setDetalle(null)} className="text-slate-400 hover:text-slate-600 text-xl">✕</button>
             </div>
-            <div className="grid gap-3">
-              <div className="grid grid-cols-2 gap-3">
-                <div className="bg-slate-50 rounded-lg p-3">
-                  <div className="text-[11px] text-slate-400 font-semibold uppercase mb-1">Producto</div>
-                  <div className="font-bold text-slate-900">{seleccionada.producto}</div>
+
+            {cargandoDetalle ? (
+              <div className="p-8 text-center text-slate-400">Cargando...</div>
+            ) : errorDetalle ? (
+              <div className="p-3 rounded-lg bg-red-100 text-red-600 text-sm">{errorDetalle}</div>
+            ) : (
+              <div className="grid gap-3">
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="bg-slate-50 rounded-lg p-3">
+                    <div className="text-[11px] text-slate-400 font-semibold uppercase mb-1">Producto</div>
+                    <div className="font-bold text-slate-900">{detalle.producto}</div>
+                  </div>
+                  <div className="bg-slate-50 rounded-lg p-3">
+                    <div className="text-[11px] text-slate-400 font-semibold uppercase mb-1">Precio</div>
+                    <div className="font-bold text-slate-900 text-lg">{fmt(detalle.precio)}</div>
+                  </div>
                 </div>
+                {detalle.descripcion && (
+                  <div className="bg-slate-50 rounded-lg p-3">
+                    <div className="text-[11px] text-slate-400 font-semibold uppercase mb-1">Descripción</div>
+                    <div className="text-slate-700 text-sm">{detalle.descripcion}</div>
+                  </div>
+                )}
                 <div className="bg-slate-50 rounded-lg p-3">
-                  <div className="text-[11px] text-slate-400 font-semibold uppercase mb-1">Precio</div>
-                  <div className="font-bold text-slate-900 text-lg">{fmt(seleccionada.precio)}</div>
+                  <div className="text-[11px] text-slate-400 font-semibold uppercase mb-1">Fecha</div>
+                  <div className="text-slate-700 text-sm">{fmtFechaHora(detalle.fecha)}</div>
                 </div>
+                {detalle.foto_factura && (
+                  <div>
+                    <div className="text-sm font-semibold text-slate-700 mb-1.5">📄 Foto de factura</div>
+                    <img
+                      src={detalle.foto_factura}
+                      alt="Factura"
+                      className="max-h-44 rounded-lg border border-slate-200 cursor-zoom-in"
+                      onClick={() => setImagenGrande(detalle.foto_factura)}
+                    />
+                  </div>
+                )}
+                {detalle.foto_qr && (
+                  <div>
+                    <div className="text-sm font-semibold text-slate-700 mb-1.5">📱 Comprobante QR</div>
+                    <img
+                      src={detalle.foto_qr}
+                      alt="Comprobante"
+                      className="max-h-44 rounded-lg border border-slate-200 cursor-zoom-in"
+                      onClick={() => setImagenGrande(detalle.foto_qr)}
+                    />
+                  </div>
+                )}
+                {detalle.devuelto && (
+                  <div className="border border-red-200 rounded-lg p-3 bg-red-50">
+                    <div className="text-sm font-bold text-red-600 mb-2">🔄 Esta compra fue devuelta</div>
+                    {detalle.devolucion_motivo && (
+                      <div className="text-sm text-slate-700 mb-1"><strong>Motivo:</strong> {detalle.devolucion_motivo}</div>
+                    )}
+                    {detalle.devolucion_tipo_pago && (
+                      <div className="text-sm text-slate-700 mb-1">
+                        <strong>Reembolso:</strong> {detalle.devolucion_tipo_pago === 'transferencia' ? 'Transferencia bancaria' : 'Cobro físico'}
+                      </div>
+                    )}
+                    {detalle.devolucion_fecha && (
+                      <div className="text-sm text-slate-700 mb-2"><strong>Fecha devolución:</strong> {fmtFecha(detalle.devolucion_fecha)}</div>
+                    )}
+                    {detalle.devolucion_comprobante && (
+                      <img
+                        src={detalle.devolucion_comprobante}
+                        alt="Comprobante de reembolso"
+                        className="max-h-44 rounded-lg border border-slate-200 cursor-zoom-in"
+                        onClick={() => setImagenGrande(detalle.devolucion_comprobante)}
+                      />
+                    )}
+                  </div>
+                )}
               </div>
-              {seleccionada.descripcion && (
-                <div className="bg-slate-50 rounded-lg p-3">
-                  <div className="text-[11px] text-slate-400 font-semibold uppercase mb-1">Descripción</div>
-                  <div className="text-slate-700 text-sm">{seleccionada.descripcion}</div>
-                </div>
-              )}
-              <div className="bg-slate-50 rounded-lg p-3">
-                <div className="text-[11px] text-slate-400 font-semibold uppercase mb-1">Fecha</div>
-                <div className="text-slate-700 text-sm">{fmtFechaHora(seleccionada.fecha)}</div>
-              </div>
-              {seleccionada.foto_factura && (
-                <div>
-                  <div className="text-sm font-semibold text-slate-700 mb-1.5">📄 Foto de factura</div>
-                  <img
-                    src={seleccionada.foto_factura}
-                    alt="Factura"
-                    className="max-h-44 rounded-lg border border-slate-200 cursor-zoom-in"
-                    onClick={() => setImagenGrande(seleccionada.foto_factura)}
-                  />
-                </div>
-              )}
-              {seleccionada.foto_qr && (
-                <div>
-                  <div className="text-sm font-semibold text-slate-700 mb-1.5">📱 Comprobante QR</div>
-                  <img
-                    src={seleccionada.foto_qr}
-                    alt="Comprobante"
-                    className="max-h-44 rounded-lg border border-slate-200 cursor-zoom-in"
-                    onClick={() => setImagenGrande(seleccionada.foto_qr)}
-                  />
-                </div>
-              )}
-              {seleccionada.devuelto && (
-                <div className="border border-red-200 rounded-lg p-3 bg-red-50">
-                  <div className="text-sm font-bold text-red-600">🔄 Esta compra fue devuelta</div>
-                  <p className="text-xs text-slate-500 mt-1">El detalle completo de la devolución se mostrará aquí cuando construyamos esa sección.</p>
-                </div>
-              )}
-            </div>
+            )}
           </div>
         </div>
       )}
