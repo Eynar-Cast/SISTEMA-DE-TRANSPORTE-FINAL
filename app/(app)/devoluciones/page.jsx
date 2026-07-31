@@ -1,5 +1,7 @@
 'use client';
 import { useState, useEffect, useCallback } from 'react';
+import UploadZone from '@/components/forms/UploadZone';
+import Toast from '@/components/ui/Toast';
 
 function fmt(n) {
   return 'Bs. ' + Number(n).toFixed(2);
@@ -10,6 +12,7 @@ function fmtFecha(iso) {
 
 export default function DevolucionesPage() {
   const [compras, setCompras] = useState([]);
+  const [cargando, setCargando] = useState(true);
   const [compraId, setCompraId] = useState('');
   const [motivo, setMotivo] = useState('');
   const [tipoPago, setTipoPago] = useState('fisico');
@@ -19,28 +22,21 @@ export default function DevolucionesPage() {
   const [guardando, setGuardando] = useState(false);
 
   const cargarCompras = useCallback(async () => {
-    const res = await fetch('/api/compras?periodo=todo');
-    const data = await res.json();
-    if (res.ok) {
-      setCompras(data.compras.filter(c => !c.devuelto));
+    try {
+      const res = await fetch('/api/compras?periodo=todo');
+      const data = await res.json();
+      if (res.ok) {
+        setCompras(data.compras.filter(c => !c.devuelto));
+      }
+    } catch {
+      setError('No se pudieron cargar las compras');
     }
+    setCargando(false);
   }, []);
 
   useEffect(() => { cargarCompras(); }, [cargarCompras]);
 
   const compraSeleccionada = compras.find(c => c.id === compraId);
-
-  function handleFile(e) {
-    const file = e.target.files[0];
-    if (!file) return;
-    if (file.size > 5 * 1024 * 1024) {
-      setError('El archivo es demasiado grande (máx. 5MB)');
-      return;
-    }
-    const reader = new FileReader();
-    reader.onload = (ev) => setComprobante(ev.target.result);
-    reader.readAsDataURL(file);
-  }
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -64,7 +60,7 @@ export default function DevolucionesPage() {
         setGuardando(false);
         return;
       }
-      setMensaje('🔄 Devolución registrada correctamente');
+      setMensaje('Devolución registrada correctamente');
       setCompraId(''); setMotivo(''); setTipoPago('fisico'); setComprobante(null);
       await cargarCompras();
     } catch {
@@ -78,9 +74,6 @@ export default function DevolucionesPage() {
       <h1 className="text-2xl font-bold text-slate-900 mb-1">Devoluciones</h1>
       <p className="text-slate-500 text-sm mb-6">Registra una devolución de producto</p>
 
-      {mensaje && <div className="mb-4 p-3 rounded-lg bg-green-100 text-green-700 text-sm">{mensaje}</div>}
-      {error && <div className="mb-4 p-3 rounded-lg bg-red-100 text-red-600 text-sm">{error}</div>}
-
       <div className="bg-white rounded-xl border border-slate-200 p-6">
         <div className="mb-4">
           <label className="block text-sm font-medium text-slate-700 mb-1">Seleccionar compra a devolver</label>
@@ -89,14 +82,14 @@ export default function DevolucionesPage() {
             onChange={(e) => setCompraId(e.target.value)}
             className="w-full px-3 py-2 border border-slate-300 rounded-lg outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
           >
-            <option value="">— Selecciona una compra —</option>
+            <option value="">{cargando ? 'Cargando compras...' : '— Selecciona una compra —'}</option>
             {compras.map(c => (
               <option key={c.id} value={c.id}>
                 {c.producto} — {fmt(c.precio)} — {fmtFecha(c.fecha)}
               </option>
             ))}
           </select>
-          {compras.length === 0 && (
+          {!cargando && compras.length === 0 && (
             <p className="text-xs text-slate-400 mt-1">No tienes compras disponibles para devolver.</p>
           )}
         </div>
@@ -125,7 +118,7 @@ export default function DevolucionesPage() {
               <label className="block text-sm font-medium text-slate-700 mb-2">Reembolso — Tipo *</label>
               <div className="flex gap-4 flex-wrap">
                 <label className="flex items-center gap-2 text-sm">
-                  <input type="radio" checked={tipoPago === 'fisico'} onChange={() => setTipoPago('fisico')} />
+                  <input type="radio" checked={tipoPago === 'fisico'} onChange={() => { setTipoPago('fisico'); setComprobante(null); }} />
                   Cobro físico (efectivo)
                 </label>
                 <label className="flex items-center gap-2 text-sm">
@@ -137,9 +130,7 @@ export default function DevolucionesPage() {
 
             {tipoPago === 'transferencia' && (
               <div className="mb-4">
-                <label className="block text-sm font-medium text-slate-700 mb-1">Comprobante de transferencia (reembolso)</label>
-                <input type="file" accept="image/*" onChange={handleFile} />
-                {comprobante && <img src={comprobante} alt="Comprobante" className="mt-2 max-h-40 rounded-lg border" />}
+                <UploadZone label="Comprobante de transferencia (reembolso)" value={comprobante} onChange={setComprobante} maxMB={5} />
               </div>
             )}
 
@@ -153,6 +144,9 @@ export default function DevolucionesPage() {
           </form>
         )}
       </div>
+
+      {mensaje && <Toast mensaje={mensaje} tipo="exito" onClose={() => setMensaje('')} />}
+      {error && <Toast mensaje={error} tipo="error" onClose={() => setError('')} />}
     </div>
   );
 }

@@ -1,5 +1,7 @@
 'use client';
 import { useState, useEffect, useCallback } from 'react';
+import UploadZone from '@/components/forms/UploadZone';
+import Toast from '@/components/ui/Toast';
 
 export default function GastoChoferPage() {
   const [choferes, setChoferes] = useState([]);
@@ -30,18 +32,6 @@ export default function GastoChoferPage() {
 
   useEffect(() => { cargarChoferes(); }, [cargarChoferes]);
 
-  function handleFile(e, setFn) {
-    const file = e.target.files[0];
-    if (!file) return;
-    if (file.size > 5 * 1024 * 1024) {
-      setError('El archivo es demasiado grande (máx. 5MB)');
-      return;
-    }
-    const reader = new FileReader();
-    reader.onload = (ev) => setFn(ev.target.result);
-    reader.readAsDataURL(file);
-  }
-
   async function handleSubmit(e) {
     e.preventDefault();
     setError(''); setMensaje('');
@@ -65,7 +55,7 @@ export default function GastoChoferPage() {
         setGuardando(false);
         return;
       }
-      setMensaje('✅ Gasto registrado correctamente');
+      setMensaje('Gasto registrado correctamente');
       setChoferId(''); setNombre(''); setMonto(''); setDescripcion('');
       setTieneFactura(false); setFotoFactura(null);
       setPagado(true); setTipoPago('fisico'); setFotoQr(null);
@@ -104,9 +94,6 @@ export default function GastoChoferPage() {
       <h1 className="text-2xl font-bold text-slate-900 mb-1">Gasto de Chofer</h1>
       <p className="text-slate-500 text-sm mb-6">Registra un gasto asociado a un chofer</p>
 
-      {mensaje && <div className="mb-4 p-3 rounded-lg bg-green-100 text-green-700 text-sm">{mensaje}</div>}
-      {error && <div className="mb-4 p-3 rounded-lg bg-red-100 text-red-600 text-sm">{error}</div>}
-
       <form onSubmit={handleSubmit} className="bg-white rounded-xl border border-slate-200 p-6 space-y-5">
         <div>
           <label className="block text-sm font-medium text-slate-700 mb-1">Chofer *</label>
@@ -143,14 +130,12 @@ export default function GastoChoferPage() {
 
         <div className="border border-slate-200 rounded-lg p-4 bg-slate-50">
           <label className="flex items-center gap-2 text-sm font-semibold text-slate-700 mb-2">
-            <input type="checkbox" checked={tieneFactura} onChange={e => setTieneFactura(e.target.checked)} />
+            <input type="checkbox" checked={tieneFactura}
+              onChange={e => { setTieneFactura(e.target.checked); if (!e.target.checked) setFotoFactura(null); }} />
             ¿Tiene factura?
           </label>
           {tieneFactura && (
-            <div>
-              <input type="file" accept="image/*" onChange={e => handleFile(e, setFotoFactura)} />
-              {fotoFactura && <img src={fotoFactura} alt="Factura" className="mt-2 max-h-40 rounded-lg border" />}
-            </div>
+            <UploadZone label="Foto de la factura" value={fotoFactura} onChange={setFotoFactura} maxMB={5} />
           )}
         </div>
 
@@ -162,7 +147,7 @@ export default function GastoChoferPage() {
               Sí, pagado
             </label>
             <label className="flex items-center gap-2 text-sm">
-              <input type="radio" checked={pagado === false} onChange={() => setPagado(false)} />
+              <input type="radio" checked={pagado === false} onChange={() => { setPagado(false); setFotoQr(null); }} />
               No pagado / pendiente
             </label>
           </div>
@@ -172,7 +157,7 @@ export default function GastoChoferPage() {
               <label className="block text-sm font-medium text-slate-700 mb-2">Tipo de pago</label>
               <div className="flex gap-4 flex-wrap mb-2">
                 <label className="flex items-center gap-2 text-sm">
-                  <input type="radio" checked={tipoPago === 'fisico'} onChange={() => setTipoPago('fisico')} />
+                  <input type="radio" checked={tipoPago === 'fisico'} onChange={() => { setTipoPago('fisico'); setFotoQr(null); }} />
                   Pago físico
                 </label>
                 <label className="flex items-center gap-2 text-sm">
@@ -181,10 +166,7 @@ export default function GastoChoferPage() {
                 </label>
               </div>
               {tipoPago === 'qr' && (
-                <div>
-                  <input type="file" accept="image/*" onChange={e => handleFile(e, setFotoQr)} />
-                  {fotoQr && <img src={fotoQr} alt="Comprobante QR" className="mt-2 max-h-40 rounded-lg border" />}
-                </div>
+                <UploadZone label="Comprobante QR / transferencia" value={fotoQr} onChange={setFotoQr} maxMB={5} />
               )}
             </div>
           )}
@@ -195,6 +177,9 @@ export default function GastoChoferPage() {
           {guardando ? 'Guardando...' : '✅ Registrar gasto'}
         </button>
       </form>
+
+      {mensaje && <Toast mensaje={mensaje} tipo="exito" onClose={() => setMensaje('')} />}
+      {error && <Toast mensaje={error} tipo="error" onClose={() => setError('')} />}
     </div>
   );
 }
