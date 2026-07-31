@@ -15,10 +15,13 @@ export default function ChoferesPage() {
   const [guardando, setGuardando] = useState(false);
 
   const cargarChoferes = useCallback(async () => {
-    setCargando(true);
-    const res = await fetch('/api/choferes');
-    const data = await res.json();
-    if (res.ok) setChoferes(data.choferes);
+    try {
+      const res = await fetch('/api/choferes');
+      const data = await res.json();
+      if (res.ok) setChoferes(data.choferes);
+    } catch {
+      setError('No se pudo cargar la lista de choferes');
+    }
     setCargando(false);
   }, []);
 

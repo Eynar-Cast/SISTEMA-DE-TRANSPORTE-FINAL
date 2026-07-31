@@ -35,18 +35,21 @@ export default function GastosChoferesPage() {
   }, []);
 
   const cargarGastos = useCallback(async () => {
-    setCargando(true);
-    const params = new URLSearchParams();
-    if (choferId) params.set('choferId', choferId);
-    if (desde || hasta) {
-      if (desde) params.set('desde', desde);
-      if (hasta) params.set('hasta', hasta);
-    } else {
-      params.set('periodo', filtro);
+    try {
+      const params = new URLSearchParams();
+      if (choferId) params.set('choferId', choferId);
+      if (desde || hasta) {
+        if (desde) params.set('desde', desde);
+        if (hasta) params.set('hasta', hasta);
+      } else {
+        params.set('periodo', filtro);
+      }
+      const res = await fetch(`/api/gastos-choferes?${params.toString()}`);
+      const data = await res.json();
+      if (res.ok) setGastos(data.gastos);
+    } catch {
+      // silencioso: se conservan los datos previos
     }
-    const res = await fetch(`/api/gastos-choferes?${params.toString()}`);
-    const data = await res.json();
-    if (res.ok) setGastos(data.gastos);
     setCargando(false);
   }, [filtro, choferId, desde, hasta]);
 

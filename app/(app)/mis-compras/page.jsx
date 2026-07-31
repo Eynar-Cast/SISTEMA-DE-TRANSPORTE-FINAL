@@ -42,13 +42,12 @@ export default function MisComprasPage() {
   const [imagenGrande, setImagenGrande] = useState(null);
 
   const cargarCompras = useCallback(async () => {
-    setCargando(true);
-    setError('');
     try {
       const res = await fetch(`/api/compras?periodo=${filtro}`);
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Error al cargar');
       setCompras(data.compras);
+      setError('');
     } catch (err) {
       setError(err.message);
     }

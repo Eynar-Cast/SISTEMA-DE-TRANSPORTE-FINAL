@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { query } from '@/lib/db';
 import { obtenerSesion } from '@/lib/session';
+import { esUUID } from '@/lib/utils';
 
 export async function GET(request, { params }) {
   const sesion = await obtenerSesion();
@@ -9,6 +10,9 @@ export async function GET(request, { params }) {
   }
 
   const { id } = await params;
+  if (!esUUID(id)) {
+    return NextResponse.json({ error: 'Gasto no encontrado' }, { status: 404 });
+  }
   const rows = await query(
     `SELECT g.*, c.nombre AS chofer_nombre, c.placa AS chofer_placa, u.nombre AS usuario_nombre
      FROM gastos_chofer g
@@ -31,6 +35,9 @@ export async function PUT(request, { params }) {
   }
 
   const { id } = await params;
+  if (!esUUID(id)) {
+    return NextResponse.json({ error: 'Gasto no encontrado' }, { status: 404 });
+  }
   const { tipoPago, fotoQr } = await request.json();
 
   if (tipoPago === 'qr' && !fotoQr) {

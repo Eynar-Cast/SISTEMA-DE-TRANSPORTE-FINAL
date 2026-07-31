@@ -22,10 +22,13 @@ export default function UsuariosPage() {
   const [pass2, setPass2] = useState('');
 
   const cargar = useCallback(async () => {
-    setCargando(true);
-    const res = await fetch('/api/usuarios');
-    const data = await res.json();
-    if (res.ok) setUsuarios(data.usuarios);
+    try {
+      const res = await fetch('/api/usuarios');
+      const data = await res.json();
+      if (res.ok) setUsuarios(data.usuarios);
+    } catch {
+      setError('No se pudo cargar la lista de usuarios');
+    }
     setCargando(false);
   }, []);
 

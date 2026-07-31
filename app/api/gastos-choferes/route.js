@@ -15,7 +15,9 @@ export async function GET(request) {
   const hasta = searchParams.get('hasta') || '';
 
   let sql = `
-    SELECT g.*, c.nombre AS chofer_nombre, c.placa AS chofer_placa, u.nombre AS usuario_nombre
+    SELECT g.id, g.chofer_id, g.user_id, g.nombre, g.monto, g.descripcion,
+           g.tiene_factura, g.pagado, g.tipo_pago, g.fecha,
+           c.nombre AS chofer_nombre, c.placa AS chofer_placa, u.nombre AS usuario_nombre
     FROM gastos_chofer g
     JOIN choferes c ON c.id = g.chofer_id
     JOIN usuarios u ON u.id = g.user_id

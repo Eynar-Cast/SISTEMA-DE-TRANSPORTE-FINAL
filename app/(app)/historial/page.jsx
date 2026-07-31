@@ -45,18 +45,21 @@ export default function HistorialPage() {
   }, []);
 
   const cargarCompras = useCallback(async () => {
-    setCargando(true);
-    const params = new URLSearchParams();
-    if (userId) params.set('userId', userId);
-    if (desde || hasta) {
-      if (desde) params.set('desde', desde);
-      if (hasta) params.set('hasta', hasta);
-    } else {
-      params.set('periodo', filtro);
+    try {
+      const params = new URLSearchParams();
+      if (userId) params.set('userId', userId);
+      if (desde || hasta) {
+        if (desde) params.set('desde', desde);
+        if (hasta) params.set('hasta', hasta);
+      } else {
+        params.set('periodo', filtro);
+      }
+      const res = await fetch(`/api/compras?${params.toString()}`);
+      const data = await res.json();
+      if (res.ok) setCompras(data.compras);
+    } catch {
+      // silencioso: se conservan los datos previos
     }
-    const res = await fetch(`/api/compras?${params.toString()}`);
-    const data = await res.json();
-    if (res.ok) setCompras(data.compras);
     setCargando(false);
   }, [filtro, userId, desde, hasta]);
 

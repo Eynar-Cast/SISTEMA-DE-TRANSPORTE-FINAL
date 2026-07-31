@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { query } from '@/lib/db';
 import { obtenerSesion } from '@/lib/session';
 import { hashPassword } from '@/lib/auth';
+import { esUUID } from '@/lib/utils';
 
 export async function PUT(request, { params }) {
   const sesion = await obtenerSesion();
@@ -10,6 +11,9 @@ export async function PUT(request, { params }) {
   }
 
   const { id } = await params;
+  if (!esUUID(id)) {
+    return NextResponse.json({ error: 'Usuario no encontrado' }, { status: 404 });
+  }
   const body = await request.json();
 
   if (body.accion === 'toggle') {

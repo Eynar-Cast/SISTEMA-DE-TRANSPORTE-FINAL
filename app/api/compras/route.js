@@ -12,7 +12,10 @@ export async function GET(request) {
   const desde = searchParams.get('desde') || '';
   const hasta = searchParams.get('hasta') || '';
 
-  let sql = 'SELECT * FROM compras WHERE 1=1';
+  // No se devuelven foto_factura/foto_qr en el listado: son data URLs de hasta 5MB
+  // que no se usan en las tablas (solo el detalle las necesita).
+  let sql = `SELECT id, user_id, producto, precio, descripcion, tiene_factura, tipo_pago, devuelto, fecha
+             FROM compras WHERE 1=1`;
   const params = [];
 
   if (sesion.role !== 'admin') {

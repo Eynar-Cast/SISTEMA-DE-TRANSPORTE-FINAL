@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { query } from '@/lib/db';
 import { obtenerSesion } from '@/lib/session';
+import { esUUID } from '@/lib/utils';
 
 /**
  * GET /api/compras/[id]
@@ -22,6 +23,10 @@ export async function GET(_request, { params }) {
   }
 
   const { id } = await params;
+
+  if (!esUUID(id)) {
+    return NextResponse.json({ error: 'Compra no encontrada' }, { status: 404 });
+  }
 
   const sql = `
     SELECT

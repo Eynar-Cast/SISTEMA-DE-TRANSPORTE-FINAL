@@ -15,11 +15,17 @@ export default function GastoChoferPage() {
   const [mensaje, setMensaje] = useState('');
   const [error, setError] = useState('');
   const [guardando, setGuardando] = useState(false);
+  const [cargandoChoferes, setCargandoChoferes] = useState(true);
 
   const cargarChoferes = useCallback(async () => {
-    const res = await fetch('/api/choferes');
-    const data = await res.json();
-    if (res.ok) setChoferes(data.choferes);
+    try {
+      const res = await fetch('/api/choferes');
+      const data = await res.json();
+      if (res.ok) setChoferes(data.choferes);
+    } catch {
+      setError('No se pudieron cargar los choferes');
+    }
+    setCargandoChoferes(false);
   }, []);
 
   useEffect(() => { cargarChoferes(); }, [cargarChoferes]);
@@ -67,6 +73,18 @@ export default function GastoChoferPage() {
       setError('No se pudo conectar con el servidor');
     }
     setGuardando(false);
+  }
+
+  if (cargandoChoferes) {
+    return (
+      <div>
+        <h1 className="text-2xl font-bold text-slate-900 mb-1">Gasto de Chofer</h1>
+        <p className="text-slate-500 text-sm mb-6">Registra un gasto asociado a un chofer</p>
+        <div className="bg-white rounded-xl border border-slate-200 p-6 text-slate-400 text-sm">
+          Cargando choferes...
+        </div>
+      </div>
+    );
   }
 
   if (choferes.length === 0) {
