@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { getClient } from '@/lib/db';
 import { obtenerSesion } from '@/lib/session';
-import { esUUID } from '@/lib/utils';
+import { esID } from '@/lib/utils';
 
 export async function POST(request) {
   const sesion = await obtenerSesion();
@@ -12,7 +12,7 @@ export async function POST(request) {
   if (!compraId || !motivo?.trim()) {
     return NextResponse.json({ error: 'Selecciona una compra e indica el motivo' }, { status: 400 });
   }
-  if (!esUUID(compraId)) {
+  if (!esID(compraId)) {
     return NextResponse.json({ error: 'Compra no encontrada o ya devuelta' }, { status: 400 });
   }
   if (tipoPago === 'transferencia' && !comprobante) {

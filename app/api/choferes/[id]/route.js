@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { query } from '@/lib/db';
 import { obtenerSesion } from '@/lib/session';
-import { esUUID } from '@/lib/utils';
+import { esID } from '@/lib/utils';
 
 export async function PUT(request, { params }) {
   const sesion = await obtenerSesion();
@@ -10,7 +10,7 @@ export async function PUT(request, { params }) {
   }
 
   const { id } = await params;
-  if (!esUUID(id)) {
+  if (!esID(id)) {
     return NextResponse.json({ error: 'Chofer no encontrado' }, { status: 404 });
   }
   const { nombre, placa, telefono, direccion } = await request.json();
