@@ -11,11 +11,11 @@
  */
 
 const COLORES = {
-  blue:   'bg-blue-50 border-blue-200 text-blue-700',
-  green:  'bg-emerald-50 border-emerald-200 text-emerald-700',
-  amber:  'bg-amber-50 border-amber-200 text-amber-700',
-  red:    'bg-red-50 border-red-200 text-red-700',
-  violet: 'bg-violet-50 border-violet-200 text-violet-700',
+  blue:   'bg-blue-50 border-blue-200 text-blue-700 dark:bg-blue-950/40 dark:border-blue-900 dark:text-blue-300',
+  green:  'bg-emerald-50 border-emerald-200 text-emerald-700 dark:bg-emerald-950/40 dark:border-emerald-900 dark:text-emerald-300',
+  amber:  'bg-amber-50 border-amber-200 text-amber-700 dark:bg-amber-950/40 dark:border-amber-900 dark:text-amber-300',
+  red:    'bg-red-50 border-red-200 text-red-700 dark:bg-red-950/40 dark:border-red-900 dark:text-red-300',
+  violet: 'bg-violet-50 border-violet-200 text-violet-700 dark:bg-violet-950/40 dark:border-violet-900 dark:text-violet-300',
 };
 
 export default function StatCard({ titulo, valor, icono, color = 'blue' }) {

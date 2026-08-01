@@ -58,37 +58,37 @@ export default function NuevaCompraPage() {
 
   return (
     <div className="max-w-xl">
-      <h1 className="text-2xl font-bold text-slate-900 mb-1">Nueva Compra</h1>
-      <p className="text-slate-500 text-sm mb-6">Registra un nuevo producto adquirido</p>
+      <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100 mb-1">Nueva Compra</h1>
+      <p className="text-slate-500 dark:text-slate-400 text-sm mb-6">Registra un nuevo producto adquirido</p>
 
-      <form onSubmit={handleSubmit} className="bg-white rounded-xl border border-slate-200 p-6 space-y-5">
+      <form onSubmit={handleSubmit} className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-6 space-y-5">
         {/* Producto y Precio */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">Nombre del producto *</label>
+            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Nombre del producto *</label>
             <input value={producto} onChange={e => setProducto(e.target.value)}
-              className="w-full px-3 py-2 border border-slate-300 rounded-lg outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
+              className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 dark:placeholder:text-slate-500 rounded-lg outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
               placeholder="Ej: Filtro de aceite Volvo" />
           </div>
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">Precio (Bs.) *</label>
+            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Precio (Bs.) *</label>
             <input type="number" step="0.01" min="0" value={precio} onChange={e => setPrecio(e.target.value)}
-              className="w-full px-3 py-2 border border-slate-300 rounded-lg outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
+              className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 dark:placeholder:text-slate-500 rounded-lg outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
               placeholder="0.00" />
           </div>
         </div>
 
         {/* Descripción */}
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1">Descripción (opcional)</label>
+          <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Descripción (opcional)</label>
           <textarea value={descripcion} onChange={e => setDescripcion(e.target.value)} rows={2}
-            className="w-full px-3 py-2 border border-slate-300 rounded-lg outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
+            className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 dark:placeholder:text-slate-500 rounded-lg outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
             placeholder="Detalles adicionales del producto..." />
         </div>
 
         {/* Factura */}
-        <div className="border border-slate-200 rounded-lg p-4 bg-slate-50">
-          <label className="flex items-center gap-2 text-sm font-semibold text-slate-700 mb-2">
+        <div className="border border-slate-200 dark:border-slate-800 rounded-lg p-4 bg-slate-50 dark:bg-slate-800/60">
+          <label className="flex items-center gap-2 text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">
             <input type="checkbox" checked={tieneFactura} onChange={e => { setTieneFactura(e.target.checked); if (!e.target.checked) setFotoFactura(null); }} />
             ¿Tiene factura?
           </label>
@@ -102,8 +102,8 @@ export default function NuevaCompraPage() {
         </div>
 
         {/* Tipo de Pago */}
-        <div className="border border-slate-200 rounded-lg p-4 bg-slate-50">
-          <label className="block text-sm font-semibold text-slate-700 mb-2">Tipo de pago *</label>
+        <div className="border border-slate-200 dark:border-slate-800 rounded-lg p-4 bg-slate-50 dark:bg-slate-800/60">
+          <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Tipo de pago *</label>
           <div className="flex gap-4 flex-wrap mb-2">
             <label className="flex items-center gap-2 text-sm">
               <input type="radio" name="pago" checked={tipoPago === 'fisico'} onChange={() => { setTipoPago('fisico'); setFotoQr(null); }} />

@@ -83,19 +83,19 @@ export default function ChoferesPage() {
     <div>
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Choferes</h1>
-          <p className="text-slate-500 text-sm">Registro de choferes y sus camiones</p>
+          <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">Choferes</h1>
+          <p className="text-slate-500 dark:text-slate-400 dark:text-slate-500 text-sm">Registro de choferes y sus camiones</p>
         </div>
         <button onClick={abrirNuevo} className="bg-blue-600 hover:bg-blue-700 text-white font-medium px-4 py-2 rounded-lg text-sm">
           ➕ Nuevo chofer
         </button>
       </div>
 
-      <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
+      <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 overflow-hidden">
         {cargando ? (
-          <div className="p-12 text-center text-slate-400">Cargando...</div>
+          <div className="p-12 text-center text-slate-400 dark:text-slate-500">Cargando...</div>
         ) : choferes.length === 0 ? (
-          <div className="p-12 text-center text-slate-400">
+          <div className="p-12 text-center text-slate-400 dark:text-slate-500">
             <div className="text-4xl mb-3">🚛</div>
             <p className="font-medium">No hay choferes registrados</p>
           </div>
@@ -103,43 +103,43 @@ export default function ChoferesPage() {
           <div className="overflow-x-auto">
             <table className="w-full border-collapse">
               <thead>
-                <tr className="bg-slate-50 border-b-2 border-slate-200 text-left">
-                  <th className="px-4 py-3 text-[11px] font-semibold text-slate-500 uppercase">Nombre</th>
-                  <th className="px-4 py-3 text-[11px] font-semibold text-slate-500 uppercase">Placa</th>
-                  <th className="px-4 py-3 text-[11px] font-semibold text-slate-500 uppercase">Teléfono</th>
-                  <th className="px-4 py-3 text-[11px] font-semibold text-slate-500 uppercase">Dirección</th>
-                  <th className="px-4 py-3 text-[11px] font-semibold text-slate-500 uppercase">Estado</th>
+                <tr className="bg-slate-50 dark:bg-slate-800/60 border-b-2 border-slate-200 dark:border-slate-800 text-left">
+                  <th className="px-4 py-3 text-[11px] font-semibold text-slate-500 dark:text-slate-400 dark:text-slate-500 uppercase">Nombre</th>
+                  <th className="px-4 py-3 text-[11px] font-semibold text-slate-500 dark:text-slate-400 dark:text-slate-500 uppercase">Placa</th>
+                  <th className="px-4 py-3 text-[11px] font-semibold text-slate-500 dark:text-slate-400 dark:text-slate-500 uppercase">Teléfono</th>
+                  <th className="px-4 py-3 text-[11px] font-semibold text-slate-500 dark:text-slate-400 dark:text-slate-500 uppercase">Dirección</th>
+                  <th className="px-4 py-3 text-[11px] font-semibold text-slate-500 dark:text-slate-400 dark:text-slate-500 uppercase">Estado</th>
                   <th className="px-4 py-3"></th>
                 </tr>
               </thead>
               <tbody>
                 {choferes.map(c => (
-                  <tr key={c.id} className="border-b border-slate-100 hover:bg-slate-50">
+                  <tr key={c.id} className="border-b border-slate-100 dark:border-slate-800 hover:bg-slate-50 dark:bg-slate-800/60 dark:hover:bg-slate-800/50">
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-2.5">
-                        <div className="w-9 h-9 rounded-full bg-yellow-100 flex items-center justify-center font-bold text-yellow-800 text-sm">
+                        <div className="w-9 h-9 rounded-full bg-yellow-100 dark:bg-yellow-950/40 flex items-center justify-center font-bold text-yellow-800 dark:text-yellow-300 text-sm">
                           {c.nombre.charAt(0).toUpperCase()}
                         </div>
-                        <div className="font-semibold text-slate-900">{c.nombre}</div>
+                        <div className="font-semibold text-slate-900 dark:text-slate-100">{c.nombre}</div>
                       </div>
                     </td>
                     <td className="px-4 py-3">
-                      <span className="font-mono text-xs bg-blue-100 text-blue-700 px-2.5 py-0.5 rounded-full">{c.placa}</span>
+                      <span className="font-mono text-xs bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300 px-2.5 py-0.5 rounded-full">{c.placa}</span>
                     </td>
-                    <td className="px-4 py-3 text-sm text-slate-500">{c.telefono || '—'}</td>
-                    <td className="px-4 py-3 text-sm text-slate-500">{c.direccion || '—'}</td>
+                    <td className="px-4 py-3 text-sm text-slate-500 dark:text-slate-400 dark:text-slate-500">{c.telefono || '—'}</td>
+                    <td className="px-4 py-3 text-sm text-slate-500 dark:text-slate-400 dark:text-slate-500">{c.direccion || '—'}</td>
                     <td className="px-4 py-3">
-                      <span className={`inline-flex px-2.5 py-0.5 rounded-full text-xs font-semibold ${c.activo ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-600'}`}>
+                      <span className={`inline-flex px-2.5 py-0.5 rounded-full text-xs font-semibold ${c.activo ? 'bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300' : 'bg-red-100 text-red-600 dark:bg-red-900/40 dark:text-red-300 dark:bg-red-900/40 dark:text-red-300'}`}>
                         {c.activo ? 'Activo' : 'Inactivo'}
                       </span>
                     </td>
                     <td className="px-4 py-3">
                       <div className="flex gap-2">
                         <button onClick={() => toggleChofer(c.id)}
-                          className={`px-3 py-1.5 rounded-lg text-xs font-medium ${c.activo ? 'bg-red-100 text-red-600 hover:bg-red-200' : 'bg-green-100 text-green-700 hover:bg-green-200'}`}>
+                          className={`px-3 py-1.5 rounded-lg text-xs font-medium ${c.activo ? 'bg-red-100 text-red-600 dark:bg-red-900/40 dark:text-red-300 hover:bg-red-200 dark:bg-red-900/40 dark:text-red-300 dark:hover:bg-red-900/60' : 'bg-green-100 text-green-700 hover:bg-green-200 dark:bg-green-900/40 dark:text-green-300 dark:hover:bg-green-900/60'}`}>
                           {c.activo ? 'Desactivar' : 'Activar'}
                         </button>
-                        <button onClick={() => abrirEditar(c)} className="px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-200 text-slate-700 hover:bg-slate-300">
+                        <button onClick={() => abrirEditar(c)} className="px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-200 text-slate-700 dark:text-slate-300 dark:bg-slate-700 dark:text-slate-200 hover:bg-slate-300 dark:hover:bg-slate-600">
                           ✏️ Editar
                         </button>
                       </div>
@@ -155,43 +155,43 @@ export default function ChoferesPage() {
       {modalAbierto && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
           onClick={(e) => { if (e.target === e.currentTarget) setModalAbierto(false); }}>
-          <div className="bg-white rounded-2xl w-full max-w-md p-6">
+          <div className="bg-white dark:bg-slate-900 rounded-2xl w-full max-w-md p-6">
             <div className="flex justify-between items-center mb-5">
-              <h3 className="text-lg font-bold text-slate-900">{editando ? 'Editar Chofer' : 'Nuevo Chofer'}</h3>
-              <button onClick={() => setModalAbierto(false)} className="text-slate-400 hover:text-slate-600 text-xl">✕</button>
+              <h3 className="text-lg font-bold text-slate-900 dark:text-slate-100">{editando ? 'Editar Chofer' : 'Nuevo Chofer'}</h3>
+              <button onClick={() => setModalAbierto(false)} className="text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-400 dark:text-slate-500 text-xl">✕</button>
             </div>
 
-            {error && <div className="mb-4 p-3 rounded-lg bg-red-100 text-red-600 text-sm">{error}</div>}
+            {error && <div className="mb-4 p-3 rounded-lg bg-red-100 text-red-600 dark:bg-red-900/40 dark:text-red-300 text-sm">{error}</div>}
 
             <div className="grid gap-3.5">
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Nombre completo *</label>
+                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Nombre completo *</label>
                 <input value={nombre} onChange={e => setNombre(e.target.value)}
-                  className="w-full px-3 py-2 border border-slate-300 rounded-lg outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
+                  className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 dark:placeholder:text-slate-500 rounded-lg outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
                   placeholder="Ej: Pedro Quispe" />
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Placa del camión *</label>
+                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Placa del camión *</label>
                 <input value={placa} onChange={e => setPlaca(e.target.value)}
-                  className="w-full px-3 py-2 border border-slate-300 rounded-lg outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
+                  className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 dark:placeholder:text-slate-500 rounded-lg outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
                   placeholder="Ej: 1234-BCD" />
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Teléfono (opcional)</label>
+                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Teléfono (opcional)</label>
                 <input value={telefono} onChange={e => setTelefono(e.target.value)}
-                  className="w-full px-3 py-2 border border-slate-300 rounded-lg outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
+                  className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 dark:placeholder:text-slate-500 rounded-lg outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
                   placeholder="Ej: 70012345" />
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Dirección (opcional)</label>
+                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Dirección (opcional)</label>
                 <input value={direccion} onChange={e => setDireccion(e.target.value)}
-                  className="w-full px-3 py-2 border border-slate-300 rounded-lg outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
+                  className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 dark:placeholder:text-slate-500 rounded-lg outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
                   placeholder="Ej: Av. Montes 123, La Paz" />
               </div>
             </div>
 
             <div className="flex gap-2 justify-end mt-6">
-              <button onClick={() => setModalAbierto(false)} className="px-4 py-2 rounded-lg text-sm font-medium bg-slate-200 text-slate-700 hover:bg-slate-300">
+              <button onClick={() => setModalAbierto(false)} className="px-4 py-2 rounded-lg text-sm font-medium bg-slate-200 text-slate-700 dark:text-slate-300 dark:bg-slate-700 dark:text-slate-200 hover:bg-slate-300 dark:hover:bg-slate-600">
                 Cancelar
               </button>
               <button onClick={guardar} disabled={guardando} className="px-4 py-2 rounded-lg text-sm font-medium bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-60">
