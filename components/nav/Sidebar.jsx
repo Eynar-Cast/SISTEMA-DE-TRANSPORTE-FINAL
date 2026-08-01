@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import LogoutButton from './LogoutButton';
 import CambiarPassword from './CambiarPassword';
+import ThemeToggle from './ThemeToggle';
 
 export default function Sidebar({ items, nombre }) {
   const pathname = usePathname();
@@ -30,6 +31,7 @@ export default function Sidebar({ items, nombre }) {
         })}
       </nav>
       <div className="p-3 border-t border-white/10 space-y-1">
+        <ThemeToggle />
         <CambiarPassword />
         <LogoutButton />
       </div>

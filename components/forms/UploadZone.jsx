@@ -73,7 +73,7 @@ export default function UploadZone({ label, value, onChange, maxMB = MAX_DEFAULT
 
   return (
     <div>
-      {label && <label className="block text-sm font-medium text-slate-700 mb-1">{label}</label>}
+      {label && <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">{label}</label>}
 
       {!value ? (
         <div
@@ -83,15 +83,15 @@ export default function UploadZone({ label, value, onChange, maxMB = MAX_DEFAULT
           onClick={() => inputRef.current?.click()}
           className={`border-2 border-dashed rounded-lg p-6 text-center cursor-pointer transition-colors
             ${arrastrando
-              ? 'border-blue-500 bg-blue-50'
-              : 'border-slate-300 hover:border-blue-400 hover:bg-slate-50'
+              ? 'border-blue-500 bg-blue-50 dark:bg-blue-950/40'
+              : 'border-slate-300 dark:border-slate-600 hover:border-blue-400 hover:bg-slate-50 dark:hover:bg-slate-800/60'
             }`}
         >
           <div className="text-3xl mb-2">📷</div>
-          <p className="text-sm text-slate-600">
-            Arrastra una imagen aquí o <span className="text-blue-600 font-medium">haz clic para seleccionar</span>
+          <p className="text-sm text-slate-600 dark:text-slate-300">
+            Arrastra una imagen aquí o <span className="text-blue-600 dark:text-blue-400 font-medium">haz clic para seleccionar</span>
           </p>
-          <p className="text-xs text-slate-400 mt-1">Máx. {maxMB} MB — JPG, PNG, WEBP</p>
+          <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">Máx. {maxMB} MB — JPG, PNG, WEBP</p>
           <input
             ref={inputRef}
             type="file"
@@ -105,7 +105,7 @@ export default function UploadZone({ label, value, onChange, maxMB = MAX_DEFAULT
           <img
             src={value}
             alt={label || 'Imagen subida'}
-            className="max-h-44 rounded-lg border border-slate-200 shadow-sm"
+            className="max-h-44 rounded-lg border border-slate-200 dark:border-slate-700 shadow-sm"
           />
           <button
             type="button"

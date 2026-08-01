@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import LogoutButton from './LogoutButton';
 import CambiarPassword from './CambiarPassword';
+import ThemeToggle from './ThemeToggle';
 
 export default function MobileHeader({ items, nombre }) {
   const [abierto, setAbierto] = useState(false);
@@ -16,7 +17,10 @@ export default function MobileHeader({ items, nombre }) {
           <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-sm">🏭</div>
           <span className="font-bold text-sm">GestorCompras</span>
         </div>
-        <button onClick={() => setAbierto(true)} className="text-2xl leading-none px-1">☰</button>
+        <div className="flex items-center gap-1">
+          <ThemeToggle variant="icono" />
+          <button onClick={() => setAbierto(true)} className="text-2xl leading-none px-1">☰</button>
+        </div>
       </div>
 
       {abierto && (

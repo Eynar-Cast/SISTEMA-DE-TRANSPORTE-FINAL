@@ -57,48 +57,48 @@ export default function CambiarPassword() {
           className="fixed inset-0 bg-black/50 z-[70] flex items-center justify-center p-4"
           onClick={(e) => { if (e.target === e.currentTarget) setAbierto(false); }}
         >
-          <div className="bg-white rounded-2xl w-full max-w-sm p-6">
+          <div className="bg-white dark:bg-slate-900 rounded-2xl w-full max-w-sm p-6">
             <div className="flex justify-between items-center mb-5">
-              <h3 className="text-lg font-bold text-slate-900">Cambiar mi contraseña</h3>
-              <button onClick={() => setAbierto(false)} className="text-slate-400 hover:text-slate-600 text-xl">✕</button>
+              <h3 className="text-lg font-bold text-slate-900 dark:text-slate-100">Cambiar mi contraseña</h3>
+              <button onClick={() => setAbierto(false)} className="text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 text-xl">✕</button>
             </div>
 
-            {mensaje && <div className="mb-4 p-3 rounded-lg bg-green-100 text-green-700 text-sm">{mensaje}</div>}
-            {error && <div className="mb-4 p-3 rounded-lg bg-red-100 text-red-600 text-sm">{error}</div>}
+            {mensaje && <div className="mb-4 p-3 rounded-lg bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300 text-sm">{mensaje}</div>}
+            {error && <div className="mb-4 p-3 rounded-lg bg-red-100 text-red-600 dark:bg-red-900/40 dark:text-red-300 text-sm">{error}</div>}
 
             <div className="grid gap-3.5">
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Contraseña actual *</label>
+                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Contraseña actual *</label>
                 <input
                   type="password"
                   value={actual}
                   onChange={e => setActual(e.target.value)}
-                  className="w-full px-3 py-2 border border-slate-300 rounded-lg outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
+                  className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 dark:placeholder:text-slate-500 rounded-lg outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Nueva contraseña *</label>
+                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Nueva contraseña *</label>
                 <input
                   type="password"
                   value={nueva1}
                   onChange={e => setNueva1(e.target.value)}
-                  className="w-full px-3 py-2 border border-slate-300 rounded-lg outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
+                  className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 dark:placeholder:text-slate-500 rounded-lg outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
                   placeholder="Mínimo 6 caracteres"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Confirmar nueva contraseña *</label>
+                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Confirmar nueva contraseña *</label>
                 <input
                   type="password"
                   value={nueva2}
                   onChange={e => setNueva2(e.target.value)}
-                  className="w-full px-3 py-2 border border-slate-300 rounded-lg outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
+                  className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 dark:placeholder:text-slate-500 rounded-lg outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
                 />
               </div>
             </div>
 
             <div className="flex gap-2 justify-end mt-6">
-              <button onClick={() => setAbierto(false)} className="px-4 py-2 rounded-lg text-sm font-medium bg-slate-200 text-slate-700 hover:bg-slate-300">
+              <button onClick={() => setAbierto(false)} className="px-4 py-2 rounded-lg text-sm font-medium bg-slate-200 text-slate-700 dark:bg-slate-700 dark:text-slate-200 hover:bg-slate-300 dark:hover:bg-slate-600">
                 Cerrar
               </button>
               <button onClick={guardar} disabled={guardando} className="px-4 py-2 rounded-lg text-sm font-medium bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-60">
