@@ -48,6 +48,7 @@ CREATE TABLE choferes (
   placa      TEXT NOT NULL,
   telefono   TEXT,
   direccion  TEXT,
+  activo     BOOLEAN NOT NULL DEFAULT TRUE,
   creado     TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 

@@ -66,6 +66,19 @@ export default function ChoferesPage() {
     await cargarChoferes();
   }
 
+  async function toggleChofer(id) {
+    const res = await fetch(`/api/choferes/${id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ accion: 'toggle' }),
+    });
+    if (!res.ok) {
+      setError('No se pudo cambiar el estado del chofer');
+      return;
+    }
+    await cargarChoferes();
+  }
+
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
@@ -95,6 +108,7 @@ export default function ChoferesPage() {
                   <th className="px-4 py-3 text-[11px] font-semibold text-slate-500 uppercase">Placa</th>
                   <th className="px-4 py-3 text-[11px] font-semibold text-slate-500 uppercase">Teléfono</th>
                   <th className="px-4 py-3 text-[11px] font-semibold text-slate-500 uppercase">Dirección</th>
+                  <th className="px-4 py-3 text-[11px] font-semibold text-slate-500 uppercase">Estado</th>
                   <th className="px-4 py-3"></th>
                 </tr>
               </thead>
@@ -115,9 +129,20 @@ export default function ChoferesPage() {
                     <td className="px-4 py-3 text-sm text-slate-500">{c.telefono || '—'}</td>
                     <td className="px-4 py-3 text-sm text-slate-500">{c.direccion || '—'}</td>
                     <td className="px-4 py-3">
-                      <button onClick={() => abrirEditar(c)} className="px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-200 text-slate-700 hover:bg-slate-300">
-                        ✏️ Editar
-                      </button>
+                      <span className={`inline-flex px-2.5 py-0.5 rounded-full text-xs font-semibold ${c.activo ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-600'}`}>
+                        {c.activo ? 'Activo' : 'Inactivo'}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3">
+                      <div className="flex gap-2">
+                        <button onClick={() => toggleChofer(c.id)}
+                          className={`px-3 py-1.5 rounded-lg text-xs font-medium ${c.activo ? 'bg-red-100 text-red-600 hover:bg-red-200' : 'bg-green-100 text-green-700 hover:bg-green-200'}`}>
+                          {c.activo ? 'Desactivar' : 'Activar'}
+                        </button>
+                        <button onClick={() => abrirEditar(c)} className="px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-200 text-slate-700 hover:bg-slate-300">
+                          ✏️ Editar
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}

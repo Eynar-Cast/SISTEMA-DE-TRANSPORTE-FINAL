@@ -10,6 +10,11 @@ const FILTROS = [
 
 function fmt(n) { return 'Bs. ' + Number(n).toFixed(2); }
 function fmtFecha(iso) { return new Date(iso).toLocaleDateString('es-BO', { day: '2-digit', month: '2-digit', year: 'numeric' }); }
+function fmtFechaHora(iso) {
+  const d = new Date(iso);
+  return d.toLocaleDateString('es-BO', { day: '2-digit', month: '2-digit', year: 'numeric' }) +
+    ' ' + d.toLocaleTimeString('es-BO', { hour: '2-digit', minute: '2-digit' });
+}
 
 function StatCard({ icon, label, valor }) {
   return (
@@ -29,6 +34,11 @@ export default function GastosChoferesPage() {
   const [desde, setDesde] = useState('');
   const [hasta, setHasta] = useState('');
   const [cargando, setCargando] = useState(true);
+
+  const [detalle, setDetalle] = useState(null);
+  const [cargandoDetalle, setCargandoDetalle] = useState(false);
+  const [errorDetalle, setErrorDetalle] = useState('');
+  const [imagenGrande, setImagenGrande] = useState(null);
 
   useEffect(() => {
     fetch('/api/choferes').then(r => r.json()).then(d => setChoferes(d.choferes || []));
@@ -57,6 +67,21 @@ export default function GastosChoferesPage() {
 
   function limpiarFiltros() {
     setFiltro('todo'); setChoferId(''); setDesde(''); setHasta('');
+  }
+
+  async function verDetalle(id) {
+    setErrorDetalle('');
+    setCargandoDetalle(true);
+    setDetalle({ id }); // abre el modal ya en estado de carga
+    try {
+      const res = await fetch(`/api/gastos-choferes/${id}`);
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'No se pudo cargar el detalle');
+      setDetalle(data.gasto);
+    } catch (err) {
+      setErrorDetalle(err.message);
+    }
+    setCargandoDetalle(false);
   }
 
   const total = gastos.reduce((a, g) => a + Number(g.monto), 0);
@@ -129,6 +154,7 @@ export default function GastosChoferesPage() {
                   <th className="px-4 py-3 text-[11px] font-semibold text-slate-500 uppercase">Pago</th>
                   <th className="px-4 py-3 text-[11px] font-semibold text-slate-500 uppercase">Registrado por</th>
                   <th className="px-4 py-3 text-[11px] font-semibold text-slate-500 uppercase">Fecha</th>
+                  <th className="px-4 py-3 print:hidden"></th>
                 </tr>
               </thead>
               <tbody>
@@ -155,6 +181,11 @@ export default function GastosChoferesPage() {
                     </td>
                     <td className="px-4 py-3 text-xs text-slate-500">👤 {g.usuario_nombre}</td>
                     <td className="px-4 py-3 text-sm text-slate-500 whitespace-nowrap">{fmtFecha(g.fecha)}</td>
+                    <td className="px-4 py-3 print:hidden">
+                      <button onClick={() => verDetalle(g.id)} className="px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-200 text-slate-700 hover:bg-slate-300">
+                        Ver
+                      </button>
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -162,6 +193,110 @@ export default function GastosChoferesPage() {
           </div>
         )}
       </div>
+
+      {/* Modal de detalle */}
+      {detalle && (
+        <div
+          className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
+          onClick={(e) => { if (e.target === e.currentTarget) setDetalle(null); }}
+        >
+          <div className="bg-white rounded-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto p-6">
+            <div className="flex justify-between items-center mb-5">
+              <h3 className="text-lg font-bold text-slate-900">Detalle de Gasto</h3>
+              <button onClick={() => setDetalle(null)} className="text-slate-400 hover:text-slate-600 text-xl">✕</button>
+            </div>
+
+            {cargandoDetalle ? (
+              <div className="p-8 text-center text-slate-400">Cargando...</div>
+            ) : errorDetalle ? (
+              <div className="p-3 rounded-lg bg-red-100 text-red-600 text-sm">{errorDetalle}</div>
+            ) : (
+              <div className="grid gap-3">
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="bg-slate-50 rounded-lg p-3">
+                    <div className="text-[11px] text-slate-400 font-semibold uppercase mb-1">Gasto</div>
+                    <div className="font-bold text-slate-900">{detalle.nombre}</div>
+                  </div>
+                  <div className="bg-slate-50 rounded-lg p-3">
+                    <div className="text-[11px] text-slate-400 font-semibold uppercase mb-1">Monto</div>
+                    <div className="font-bold text-slate-900 text-lg">{fmt(detalle.monto)}</div>
+                  </div>
+                </div>
+
+                <div className="bg-slate-50 rounded-lg p-3">
+                  <div className="text-[11px] text-slate-400 font-semibold uppercase mb-1">Chofer</div>
+                  <div className="text-slate-700 text-sm">{detalle.chofer_nombre} — {detalle.chofer_placa}</div>
+                </div>
+
+                <div className="bg-slate-50 rounded-lg p-3">
+                  <div className="text-[11px] text-slate-400 font-semibold uppercase mb-1">Registrado por</div>
+                  <div className="text-slate-700 text-sm">👤 {detalle.usuario_nombre}</div>
+                </div>
+
+                {detalle.descripcion && (
+                  <div className="bg-slate-50 rounded-lg p-3">
+                    <div className="text-[11px] text-slate-400 font-semibold uppercase mb-1">Descripción</div>
+                    <div className="text-slate-700 text-sm">{detalle.descripcion}</div>
+                  </div>
+                )}
+
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="bg-slate-50 rounded-lg p-3">
+                    <div className="text-[11px] text-slate-400 font-semibold uppercase mb-1">Factura</div>
+                    <span className={`inline-flex px-2.5 py-0.5 rounded-full text-xs font-semibold ${detalle.tiene_factura ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'}`}>
+                      {detalle.tiene_factura ? '✅ Con factura' : '❌ Sin factura'}
+                    </span>
+                  </div>
+                  <div className="bg-slate-50 rounded-lg p-3">
+                    <div className="text-[11px] text-slate-400 font-semibold uppercase mb-1">Pago</div>
+                    {detalle.pagado
+                      ? <span className="inline-flex px-2.5 py-0.5 rounded-full text-xs font-semibold bg-green-100 text-green-700">{detalle.tipo_pago === 'qr' ? '📱 QR' : '💵 Físico'}</span>
+                      : <span className="inline-flex px-2.5 py-0.5 rounded-full text-xs font-semibold bg-red-100 text-red-600">⏳ Pendiente</span>}
+                  </div>
+                </div>
+
+                <div className="bg-slate-50 rounded-lg p-3">
+                  <div className="text-[11px] text-slate-400 font-semibold uppercase mb-1">Fecha</div>
+                  <div className="text-slate-700 text-sm">{fmtFechaHora(detalle.fecha)}</div>
+                </div>
+
+                {detalle.foto_factura && (
+                  <div>
+                    <div className="text-sm font-semibold text-slate-700 mb-1.5">📄 Foto de factura</div>
+                    <img
+                      src={detalle.foto_factura}
+                      alt="Factura"
+                      className="max-h-44 rounded-lg border border-slate-200 cursor-zoom-in"
+                      onClick={() => setImagenGrande(detalle.foto_factura)}
+                    />
+                  </div>
+                )}
+                {detalle.foto_qr && (
+                  <div>
+                    <div className="text-sm font-semibold text-slate-700 mb-1.5">📱 Comprobante QR</div>
+                    <img
+                      src={detalle.foto_qr}
+                      alt="Comprobante"
+                      className="max-h-44 rounded-lg border border-slate-200 cursor-zoom-in"
+                      onClick={() => setImagenGrande(detalle.foto_qr)}
+                    />
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Zoom de imagen */}
+      {imagenGrande && (
+        <div
+          className="fixed inset-0 bg-black/85 z-[60] flex items-center justify-center p-4"
+          onClick={() => setImagenGrande(null)}
+        >
+          <img src={imagenGrande} alt="" className="max-w-full max-h-[85vh] rounded-xl object-contain" />
+        </div>
+      )}
     </div>
   );
 }

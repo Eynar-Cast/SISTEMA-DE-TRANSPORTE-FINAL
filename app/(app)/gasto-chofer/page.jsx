@@ -32,6 +32,8 @@ export default function GastoChoferPage() {
 
   useEffect(() => { cargarChoferes(); }, [cargarChoferes]);
 
+  const choferesActivos = choferes.filter(c => c.activo);
+
   async function handleSubmit(e) {
     e.preventDefault();
     setError(''); setMensaje('');
@@ -77,13 +79,13 @@ export default function GastoChoferPage() {
     );
   }
 
-  if (choferes.length === 0) {
+  if (choferesActivos.length === 0) {
     return (
       <div>
         <h1 className="text-2xl font-bold text-slate-900 mb-1">Gasto de Chofer</h1>
         <p className="text-slate-500 text-sm mb-6">Registra un gasto asociado a un chofer</p>
         <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-6 text-yellow-800 text-sm">
-          ⚠️ No hay choferes registrados todavía. El administrador debe registrar al menos un chofer antes de que puedas registrar gastos.
+          ⚠️ No hay choferes activos registrados. El administrador debe registrar al menos un chofer antes de que puedas registrar gastos.
         </div>
       </div>
     );
@@ -100,7 +102,7 @@ export default function GastoChoferPage() {
           <select value={choferId} onChange={e => setChoferId(e.target.value)}
             className="w-full px-3 py-2 border border-slate-300 rounded-lg outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-100">
             <option value="">— Selecciona un chofer —</option>
-            {choferes.map(c => (
+            {choferesActivos.map(c => (
               <option key={c.id} value={c.id}>{c.nombre} — {c.placa}</option>
             ))}
           </select>

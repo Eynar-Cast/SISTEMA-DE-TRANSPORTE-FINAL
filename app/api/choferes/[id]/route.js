@@ -13,7 +13,18 @@ export async function PUT(request, { params }) {
   if (!esID(id)) {
     return NextResponse.json({ error: 'Chofer no encontrado' }, { status: 404 });
   }
-  const { nombre, placa, telefono, direccion } = await request.json();
+  const body = await request.json();
+
+  if (body.accion === 'toggle') {
+    const rows = await query(
+      `UPDATE choferes SET activo = NOT activo WHERE id = $1 RETURNING id, activo`,
+      [id]
+    );
+    if (rows.length === 0) return NextResponse.json({ error: 'Chofer no encontrado' }, { status: 404 });
+    return NextResponse.json({ chofer: rows[0] });
+  }
+
+  const { nombre, placa, telefono, direccion } = body;
   if (!nombre?.trim() || !placa?.trim()) {
     return NextResponse.json({ error: 'Nombre y placa son obligatorios' }, { status: 400 });
   }
