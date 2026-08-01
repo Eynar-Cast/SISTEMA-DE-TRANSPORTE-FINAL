@@ -71,16 +71,16 @@ export default function DevolucionesPage() {
 
   return (
     <div className="max-w-xl">
-      <h1 className="text-2xl font-bold text-slate-900 mb-1">Devoluciones</h1>
-      <p className="text-slate-500 text-sm mb-6">Registra una devolución de producto</p>
+      <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100 mb-1">Devoluciones</h1>
+      <p className="text-slate-500 dark:text-slate-400 text-sm mb-6">Registra una devolución de producto</p>
 
-      <div className="bg-white rounded-xl border border-slate-200 p-6">
+      <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-6">
         <div className="mb-4">
-          <label className="block text-sm font-medium text-slate-700 mb-1">Seleccionar compra a devolver</label>
+          <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Seleccionar compra a devolver</label>
           <select
             value={compraId}
             onChange={(e) => setCompraId(e.target.value)}
-            className="w-full px-3 py-2 border border-slate-300 rounded-lg outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
+            className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 rounded-lg outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
           >
             <option value="">{cargando ? 'Cargando compras...' : '— Selecciona una compra —'}</option>
             {compras.map(c => (
@@ -90,32 +90,32 @@ export default function DevolucionesPage() {
             ))}
           </select>
           {!cargando && compras.length === 0 && (
-            <p className="text-xs text-slate-400 mt-1">No tienes compras disponibles para devolver.</p>
+            <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">No tienes compras disponibles para devolver.</p>
           )}
         </div>
 
         {compraSeleccionada && (
           <form onSubmit={handleSubmit}>
-            <div className="p-3 rounded-lg mb-4 bg-orange-50 border border-orange-200">
-              <div className="font-semibold text-orange-800">{compraSeleccionada.producto}</div>
-              <div className="text-sm text-orange-700">
+            <div className="p-3 rounded-lg mb-4 bg-orange-50 border border-orange-200 dark:bg-orange-950/40 dark:border-orange-900">
+              <div className="font-semibold text-orange-800 dark:text-orange-300">{compraSeleccionada.producto}</div>
+              <div className="text-sm text-orange-700 dark:text-orange-400">
                 Precio: {fmt(compraSeleccionada.precio)} · Comprado: {fmtFecha(compraSeleccionada.fecha)}
               </div>
             </div>
 
             <div className="mb-4">
-              <label className="block text-sm font-medium text-slate-700 mb-1">Motivo de devolución *</label>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Motivo de devolución *</label>
               <textarea
                 value={motivo}
                 onChange={(e) => setMotivo(e.target.value)}
                 rows={2}
-                className="w-full px-3 py-2 border border-slate-300 rounded-lg outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
+                className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 dark:placeholder:text-slate-500 rounded-lg outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
                 placeholder="Describe el motivo de la devolución..."
               />
             </div>
 
             <div className="mb-4">
-              <label className="block text-sm font-medium text-slate-700 mb-2">Reembolso — Tipo *</label>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Reembolso — Tipo *</label>
               <div className="flex gap-4 flex-wrap">
                 <label className="flex items-center gap-2 text-sm">
                   <input type="radio" checked={tipoPago === 'fisico'} onChange={() => { setTipoPago('fisico'); setComprobante(null); }} />
@@ -130,7 +130,7 @@ export default function DevolucionesPage() {
 
             {tipoPago === 'transferencia' && (
               <div className="mb-4">
-                <UploadZone label="Comprobante de transferencia (reembolso)" value={comprobante} onChange={setComprobante} maxMB={5} />
+                <UploadZone label="Comprobante de transferencia (reembolso)" value={comprobante} onChange={setComprobante} maxMB={4} />
               </div>
             )}
 
