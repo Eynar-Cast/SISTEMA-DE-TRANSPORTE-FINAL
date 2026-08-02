@@ -17,6 +17,7 @@ const NAV_USER = [
   { href: '/mis-compras', label: 'Mis compras', icon: '📋' },
   { href: '/devoluciones', label: 'Devoluciones', icon: '🔄' },
   { href: '/gasto-chofer', label: 'Gasto de chofer', icon: '🚛' },
+  { href: '/mis-gastos', label: 'Mis gastos de chofer', icon: '💸' },
 ];
 
 const NAV_ADMIN = [

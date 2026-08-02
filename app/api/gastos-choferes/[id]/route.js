@@ -5,9 +5,7 @@ import { esID } from '@/lib/utils';
 
 export async function GET(request, { params }) {
   const sesion = await obtenerSesion();
-  if (!sesion || sesion.role !== 'admin') {
-    return NextResponse.json({ error: 'No autorizado' }, { status: 403 });
-  }
+  if (!sesion) return NextResponse.json({ error: 'No autorizado' }, { status: 401 });
 
   const { id } = await params;
   if (!esID(id)) {
@@ -25,7 +23,15 @@ export async function GET(request, { params }) {
   if (rows.length === 0) {
     return NextResponse.json({ error: 'Gasto no encontrado' }, { status: 404 });
   }
-  return NextResponse.json({ gasto: rows[0] });
+
+  const gasto = rows[0];
+
+  // Seguridad: un usuario normal solo ve sus propios gastos
+  if (sesion.role !== 'admin' && gasto.user_id !== sesion.id) {
+    return NextResponse.json({ error: 'No autorizado' }, { status: 403 });
+  }
+
+  return NextResponse.json({ gasto });
 }
 
 export async function PUT(request, { params }) {

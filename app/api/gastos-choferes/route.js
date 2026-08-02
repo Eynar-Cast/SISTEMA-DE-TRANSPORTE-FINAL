@@ -4,9 +4,7 @@ import { obtenerSesion } from '@/lib/session';
 
 export async function GET(request) {
   const sesion = await obtenerSesion();
-  if (!sesion || sesion.role !== 'admin') {
-    return NextResponse.json({ error: 'No autorizado' }, { status: 403 });
-  }
+  if (!sesion) return NextResponse.json({ error: 'No autorizado' }, { status: 401 });
 
   const { searchParams } = new URL(request.url);
   const periodo = searchParams.get('periodo') || 'todo';
@@ -24,7 +22,10 @@ export async function GET(request) {
     WHERE 1=1`;
   const params = [];
 
-  if (choferId) {
+  if (sesion.role !== 'admin') {
+    params.push(sesion.id);
+    sql += ` AND g.user_id = $${params.length}`;
+  } else if (choferId) {
     params.push(choferId);
     sql += ` AND g.chofer_id = $${params.length}`;
   }
