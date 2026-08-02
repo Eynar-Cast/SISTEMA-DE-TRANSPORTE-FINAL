@@ -1,14 +1,16 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { Suspense, useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 
-export default function LoginPage() {
+function LoginForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [cargando, setCargando] = useState(false);
+  const avisoSesion = searchParams.get('motivo') === 'sesion';
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -59,6 +61,12 @@ export default function LoginPage() {
           <p className="text-white/70 text-sm mt-1">Sistema de Registro de Compras</p>
         </div>
 
+        {avisoSesion && !error && (
+          <div className="mb-4 p-3 rounded-lg bg-amber-500/20 border border-amber-300/30 text-amber-100 text-sm backdrop-blur">
+            Tu sesión se cerró porque se inició sesión con esta cuenta desde otro dispositivo.
+          </div>
+        )}
+
         {error && (
           <div className="mb-4 p-3 rounded-lg bg-red-500/20 border border-red-300/30 text-red-100 text-sm backdrop-blur">
             {error}
@@ -101,5 +109,13 @@ export default function LoginPage() {
         </form>
       </div>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={null}>
+      <LoginForm />
+    </Suspense>
   );
 }

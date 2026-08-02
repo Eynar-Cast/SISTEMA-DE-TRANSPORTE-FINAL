@@ -1,3 +1,4 @@
+import { redirect } from 'next/navigation';
 import { obtenerSesion } from '@/lib/session';
 import Sidebar from '@/components/nav/Sidebar';
 import MobileHeader from '@/components/nav/MobileHeader';
@@ -30,8 +31,13 @@ const NAV_ADMIN = [
 
 export default async function AppLayout({ children }) {
   const sesion = await obtenerSesion();
-  const items = sesion?.role === 'admin' ? NAV_ADMIN : NAV_USER;
-  const nombre = sesion?.nombre || 'Usuario';
+
+  if (!sesion) {
+    redirect('/login?motivo=sesion');
+  }
+
+  const items = sesion.role === 'admin' ? NAV_ADMIN : NAV_USER;
+  const nombre = sesion.nombre;
 
   return (
     <div className="min-h-screen bg-slate-100 dark:bg-slate-950 flex">
