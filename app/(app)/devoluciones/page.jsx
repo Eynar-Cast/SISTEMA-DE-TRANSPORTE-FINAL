@@ -36,7 +36,7 @@ export default function DevolucionesPage() {
 
   useEffect(() => { cargarCompras(); }, [cargarCompras]);
 
-  const compraSeleccionada = compras.find(c => c.id === compraId);
+  const compraSeleccionada = compras.find(c => c.id === Number(compraId));
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -52,7 +52,7 @@ export default function DevolucionesPage() {
       const res = await fetch('/api/devoluciones', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ compraId, motivo, tipoPago, comprobante }),
+        body: JSON.stringify({ compraId: Number(compraId), motivo, tipoPago, comprobante }),
       });
       const data = await res.json();
       if (!res.ok) {
