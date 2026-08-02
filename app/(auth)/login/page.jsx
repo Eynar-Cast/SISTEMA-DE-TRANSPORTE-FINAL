@@ -40,62 +40,61 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="relative min-h-screen flex items-center justify-center p-4 overflow-hidden">
-      {/* Fondo degradado en móvil */}
-      <div className="absolute inset-0 md:hidden bg-gradient-to-br from-blue-950 via-blue-900 to-blue-600" />
-      {/* Fondo imagen solo en escritorio */}
+    <div className="relative min-h-screen flex items-center justify-center p-4 overflow-hidden bg-slate-900">
+      {/* Fondo imagen */}
       <div
-        className="absolute inset-0 hidden md:block bg-cover bg-center bg-no-repeat"
+        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
         style={{ backgroundImage: "url('/imagenes/login.jpg')" }}
       />
-      {/* Capa translúcida solo en escritorio, para que la imagen no compita con la tarjeta */}
-      <div className="hidden md:block absolute inset-0 bg-blue-950/20" />
+      {/* Overlay neutro para dar contraste sin tintes de color */}
+      <div className="absolute inset-0 bg-slate-900/30" />
 
-      <div className="relative z-10 w-full max-w-sm bg-white dark:bg-slate-900 rounded-xl p-8 shadow-lg border border-slate-200 dark:border-slate-800">
+      {/* Tarjeta de vidrio (glassmorphism) */}
+      <div className="relative z-10 w-full max-w-sm rounded-2xl p-8 shadow-2xl border border-white/30 bg-white/15 backdrop-blur-xl">
         <div className="text-center mb-8">
-          <div className="w-14 h-14 bg-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-4 text-2xl">
+          <div className="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-4 text-2xl bg-white/20 border border-white/30 backdrop-blur shadow-lg">
             🏭
           </div>
-          <h1 className="text-xl font-bold text-slate-900 dark:text-slate-100">GestorCompras</h1>
-          <p className="text-slate-500 dark:text-slate-400 text-sm mt-1">Sistema de Registro de Compras</p>
+          <h1 className="text-xl font-bold text-white drop-shadow">GestorCompras</h1>
+          <p className="text-white/70 text-sm mt-1">Sistema de Registro de Compras</p>
         </div>
 
         {error && (
-          <div className="mb-4 p-3 rounded-lg bg-red-100 text-red-600 dark:bg-red-900/40 dark:text-red-300 text-sm">
+          <div className="mb-4 p-3 rounded-lg bg-red-500/20 border border-red-300/30 text-red-100 text-sm backdrop-blur">
             {error}
           </div>
         )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+            <label className="block text-sm font-medium text-white/80 mb-1">
               Usuario
             </label>
             <input
               type="text"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 dark:placeholder:text-slate-500 rounded-lg outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
+              className="w-full px-3 py-2 rounded-lg outline-none bg-white/15 border border-white/30 text-white placeholder-white/50 focus:bg-white/25 focus:border-white/60 focus:ring-2 focus:ring-white/30 transition"
               placeholder="Ingresa tu usuario"
               autoFocus
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+            <label className="block text-sm font-medium text-white/80 mb-1">
               Contraseña
             </label>
             <input
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 dark:placeholder:text-slate-500 rounded-lg outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
+              className="w-full px-3 py-2 rounded-lg outline-none bg-white/15 border border-white/30 text-white placeholder-white/50 focus:bg-white/25 focus:border-white/60 focus:ring-2 focus:ring-white/30 transition"
               placeholder="••••••••"
             />
           </div>
           <button
             type="submit"
             disabled={cargando}
-            className="w-full bg-blue-600 hover:bg-blue-700 disabled:opacity-60 text-white font-medium py-2.5 rounded-lg transition"
+            className="w-full bg-white/25 hover:bg-white/40 disabled:opacity-60 text-white font-medium py-2.5 rounded-lg transition backdrop-blur border border-white/30"
           >
             {cargando ? 'Ingresando...' : 'Iniciar sesión'}
           </button>
