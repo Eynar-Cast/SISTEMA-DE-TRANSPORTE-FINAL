@@ -86,7 +86,6 @@ export default function GastosChoferesPage() {
 
   const total = gastos.reduce((a, g) => a + Number(g.monto), 0);
   const pagados = gastos.filter(g => g.pagado).reduce((a, g) => a + Number(g.monto), 0);
-  const pendientes = gastos.filter(g => !g.pagado).reduce((a, g) => a + Number(g.monto), 0);
 
   return (
     <div>
@@ -131,7 +130,6 @@ export default function GastosChoferesPage() {
         <StatCard icon="🚛" label="Gastos" valor={gastos.length} />
         <StatCard icon="💰" label="Total" valor={fmt(total)} />
         <StatCard icon="✅" label="Pagado" valor={fmt(pagados)} />
-        <StatCard icon="⏳" label="Pendiente" valor={fmt(pendientes)} />
       </div>
 
       <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 overflow-hidden">
@@ -175,11 +173,9 @@ export default function GastosChoferesPage() {
                       </span>
                     </td>
                     <td className="px-4 py-3">
-                      {g.pagado
-                        ? <span className="inline-flex px-2.5 py-0.5 rounded-full text-xs font-semibold bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300">{g.tipo_pago === 'qr' ? '📱 QR' : '💵 Físico'}</span>
-                        : <span className="inline-flex px-2.5 py-0.5 rounded-full text-xs font-semibold bg-red-100 text-red-600 dark:bg-red-900/40 dark:text-red-300">⏳ Pendiente</span>}
+                      <span className="inline-flex px-2.5 py-0.5 rounded-full text-xs font-semibold bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300">{g.tipo_pago === 'qr' ? '📱 QR / Transferencia' : '💵 Físico'}</span>
                     </td>
-                    <td className="px-4 py-3 text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500">👤 {g.usuario_nombre}</td>
+                    <td className="px-4 py-3 text-xs text-slate-500 dark:text-slate-400">👤 {g.usuario_nombre}</td>
                     <td className="px-4 py-3 text-sm text-slate-500 dark:text-slate-400 dark:text-slate-500 whitespace-nowrap">{fmtFecha(g.fecha)}</td>
                     <td className="px-4 py-3 print:hidden">
                       <button onClick={() => verDetalle(g.id)} className="px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-200 text-slate-700 dark:text-slate-300 dark:bg-slate-700 dark:text-slate-200 hover:bg-slate-300 dark:hover:bg-slate-600">
@@ -249,9 +245,7 @@ export default function GastosChoferesPage() {
                   </div>
                   <div className="bg-slate-50 dark:bg-slate-800/60 rounded-lg p-3">
                     <div className="text-[11px] text-slate-400 dark:text-slate-500 font-semibold uppercase mb-1">Pago</div>
-                    {detalle.pagado
-                      ? <span className="inline-flex px-2.5 py-0.5 rounded-full text-xs font-semibold bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300">{detalle.tipo_pago === 'qr' ? '📱 QR' : '💵 Físico'}</span>
-                      : <span className="inline-flex px-2.5 py-0.5 rounded-full text-xs font-semibold bg-red-100 text-red-600 dark:bg-red-900/40 dark:text-red-300">⏳ Pendiente</span>}
+                    <span className="inline-flex px-2.5 py-0.5 rounded-full text-xs font-semibold bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300">{detalle.tipo_pago === 'qr' ? '📱 QR / Transferencia' : '💵 Físico'}</span>
                   </div>
                 </div>
 

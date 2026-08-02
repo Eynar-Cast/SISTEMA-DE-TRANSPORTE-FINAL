@@ -11,7 +11,6 @@ export default function GastoChoferPage() {
   const [descripcion, setDescripcion] = useState('');
   const [tieneFactura, setTieneFactura] = useState(false);
   const [fotoFactura, setFotoFactura] = useState(null);
-  const [pagado, setPagado] = useState(true);
   const [tipoPago, setTipoPago] = useState('fisico');
   const [fotoQr, setFotoQr] = useState(null);
   const [mensaje, setMensaje] = useState('');
@@ -42,14 +41,14 @@ export default function GastoChoferPage() {
     if (!nombre.trim()) return setError('El nombre del gasto es obligatorio');
     const montoNum = parseFloat(monto);
     if (isNaN(montoNum) || montoNum <= 0) return setError('Ingresa un monto válido');
-    if (pagado && tipoPago === 'qr' && !fotoQr) return setError('Debes subir el comprobante QR');
+    if (tipoPago === 'qr' && !fotoQr) return setError('Debes subir el comprobante QR');
 
     setGuardando(true);
     try {
       const res = await fetch('/api/gastos-choferes', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ choferId, nombre, monto: montoNum, descripcion, tieneFactura, fotoFactura, pagado, tipoPago, fotoQr }),
+        body: JSON.stringify({ choferId, nombre, monto: montoNum, descripcion, tieneFactura, fotoFactura, pagado: true, tipoPago, fotoQr }),
       });
       const data = await res.json();
       if (!res.ok) {
@@ -60,7 +59,7 @@ export default function GastoChoferPage() {
       setMensaje('Gasto registrado correctamente');
       setChoferId(''); setNombre(''); setMonto(''); setDescripcion('');
       setTieneFactura(false); setFotoFactura(null);
-      setPagado(true); setTipoPago('fisico'); setFotoQr(null);
+      setTipoPago('fisico'); setFotoQr(null);
     } catch {
       setError('No se pudo conectar con el servidor');
     }
@@ -142,35 +141,19 @@ export default function GastoChoferPage() {
         </div>
 
         <div className="border border-slate-200 dark:border-slate-800 rounded-lg p-4 bg-slate-50 dark:bg-slate-800/60">
-          <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">¿Fue pagado? *</label>
-          <div className="flex gap-4 flex-wrap mb-3">
+          <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Tipo de pago *</label>
+          <div className="flex gap-4 flex-wrap mb-2">
             <label className="flex items-center gap-2 text-sm dark:text-slate-200">
-              <input type="radio" className="accent-blue-600" checked={pagado === true} onChange={() => setPagado(true)} />
-              Sí, pagado
+              <input type="radio" className="accent-blue-600" checked={tipoPago === 'fisico'} onChange={() => { setTipoPago('fisico'); setFotoQr(null); }} />
+              Pago físico
             </label>
             <label className="flex items-center gap-2 text-sm dark:text-slate-200">
-              <input type="radio" className="accent-blue-600" checked={pagado === false} onChange={() => { setPagado(false); setFotoQr(null); }} />
-              No pagado / pendiente
+              <input type="radio" className="accent-blue-600" checked={tipoPago === 'qr'} onChange={() => setTipoPago('qr')} />
+              QR / Transferencia
             </label>
           </div>
-
-          {pagado && (
-            <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Tipo de pago</label>
-              <div className="flex gap-4 flex-wrap mb-2">
-                <label className="flex items-center gap-2 text-sm dark:text-slate-200">
-                  <input type="radio" className="accent-blue-600" checked={tipoPago === 'fisico'} onChange={() => { setTipoPago('fisico'); setFotoQr(null); }} />
-                  Pago físico
-                </label>
-                <label className="flex items-center gap-2 text-sm dark:text-slate-200">
-                  <input type="radio" className="accent-blue-600" checked={tipoPago === 'qr'} onChange={() => setTipoPago('qr')} />
-                  QR / Transferencia
-                </label>
-              </div>
-              {tipoPago === 'qr' && (
-                <UploadZone label="Comprobante QR / transferencia" value={fotoQr} onChange={setFotoQr} maxMB={4} />
-              )}
-            </div>
+          {tipoPago === 'qr' && (
+            <UploadZone label="Comprobante QR / transferencia" value={fotoQr} onChange={setFotoQr} maxMB={4} />
           )}
         </div>
 

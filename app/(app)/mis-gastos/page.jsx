@@ -73,7 +73,6 @@ export default function MisGastosPage() {
 
   const total = gastos.reduce((a, g) => a + Number(g.monto), 0);
   const pagados = gastos.filter(g => g.pagado).reduce((a, g) => a + Number(g.monto), 0);
-  const pendientes = gastos.filter(g => !g.pagado).reduce((a, g) => a + Number(g.monto), 0);
 
   return (
     <div>
@@ -103,7 +102,6 @@ export default function MisGastosPage() {
         <StatCard icon="🚛" label="Gastos" valor={gastos.length} />
         <StatCard icon="💰" label="Total" valor={fmt(total)} />
         <StatCard icon="✅" label="Pagado" valor={fmt(pagados)} />
-        <StatCard icon="⏳" label="Pendiente" valor={fmt(pendientes)} />
       </div>
 
       <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 overflow-hidden">
@@ -146,9 +144,7 @@ export default function MisGastosPage() {
                       </span>
                     </td>
                     <td className="px-4 py-3">
-                      {g.pagado
-                        ? <span className="inline-flex px-2.5 py-0.5 rounded-full text-xs font-semibold bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300">{g.tipo_pago === 'qr' ? '📱 QR' : '💵 Físico'}</span>
-                        : <span className="inline-flex px-2.5 py-0.5 rounded-full text-xs font-semibold bg-red-100 text-red-600 dark:bg-red-900/40 dark:text-red-300">⏳ Pendiente</span>}
+                      <span className="inline-flex px-2.5 py-0.5 rounded-full text-xs font-semibold bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300">{g.tipo_pago === 'qr' ? '📱 QR / Transferencia' : '💵 Físico'}</span>
                     </td>
                     <td className="px-4 py-3 text-sm text-slate-500 dark:text-slate-400 whitespace-nowrap">{fmtFecha(g.fecha)}</td>
                     <td className="px-4 py-3">
@@ -217,9 +213,7 @@ export default function MisGastosPage() {
                   </div>
                   <div className="bg-slate-50 dark:bg-slate-800/60 rounded-lg p-3">
                     <div className="text-[11px] text-slate-400 dark:text-slate-500 font-semibold uppercase mb-1">Pago</div>
-                    {detalle.pagado
-                      ? <span className="inline-flex px-2.5 py-0.5 rounded-full text-xs font-semibold bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300">{detalle.tipo_pago === 'qr' ? '📱 QR' : '💵 Físico'}</span>
-                      : <span className="inline-flex px-2.5 py-0.5 rounded-full text-xs font-semibold bg-red-100 text-red-600 dark:bg-red-900/40 dark:text-red-300">⏳ Pendiente</span>}
+                    <span className="inline-flex px-2.5 py-0.5 rounded-full text-xs font-semibold bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300">{detalle.tipo_pago === 'qr' ? '📱 QR / Transferencia' : '💵 Físico'}</span>
                   </div>
                 </div>
 
