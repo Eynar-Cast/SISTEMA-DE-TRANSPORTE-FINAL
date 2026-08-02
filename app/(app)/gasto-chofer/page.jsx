@@ -132,7 +132,7 @@ export default function GastoChoferPage() {
 
         <div className="border border-slate-200 dark:border-slate-800 rounded-lg p-4 bg-slate-50 dark:bg-slate-800/60">
           <label className="flex items-center gap-2 text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">
-            <input type="checkbox" checked={tieneFactura}
+            <input type="checkbox" className="accent-blue-600" checked={tieneFactura}
               onChange={e => { setTieneFactura(e.target.checked); if (!e.target.checked) setFotoFactura(null); }} />
             ¿Tiene factura?
           </label>
@@ -144,12 +144,12 @@ export default function GastoChoferPage() {
         <div className="border border-slate-200 dark:border-slate-800 rounded-lg p-4 bg-slate-50 dark:bg-slate-800/60">
           <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">¿Fue pagado? *</label>
           <div className="flex gap-4 flex-wrap mb-3">
-            <label className="flex items-center gap-2 text-sm">
-              <input type="radio" checked={pagado === true} onChange={() => setPagado(true)} />
+            <label className="flex items-center gap-2 text-sm dark:text-slate-200">
+              <input type="radio" className="accent-blue-600" checked={pagado === true} onChange={() => setPagado(true)} />
               Sí, pagado
             </label>
-            <label className="flex items-center gap-2 text-sm">
-              <input type="radio" checked={pagado === false} onChange={() => { setPagado(false); setFotoQr(null); }} />
+            <label className="flex items-center gap-2 text-sm dark:text-slate-200">
+              <input type="radio" className="accent-blue-600" checked={pagado === false} onChange={() => { setPagado(false); setFotoQr(null); }} />
               No pagado / pendiente
             </label>
           </div>
@@ -158,12 +158,12 @@ export default function GastoChoferPage() {
             <div>
               <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Tipo de pago</label>
               <div className="flex gap-4 flex-wrap mb-2">
-                <label className="flex items-center gap-2 text-sm">
-                  <input type="radio" checked={tipoPago === 'fisico'} onChange={() => { setTipoPago('fisico'); setFotoQr(null); }} />
+                <label className="flex items-center gap-2 text-sm dark:text-slate-200">
+                  <input type="radio" className="accent-blue-600" checked={tipoPago === 'fisico'} onChange={() => { setTipoPago('fisico'); setFotoQr(null); }} />
                   Pago físico
                 </label>
-                <label className="flex items-center gap-2 text-sm">
-                  <input type="radio" checked={tipoPago === 'qr'} onChange={() => setTipoPago('qr')} />
+                <label className="flex items-center gap-2 text-sm dark:text-slate-200">
+                  <input type="radio" className="accent-blue-600" checked={tipoPago === 'qr'} onChange={() => setTipoPago('qr')} />
                   QR / Transferencia
                 </label>
               </div>

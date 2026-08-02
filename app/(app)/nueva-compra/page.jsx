@@ -89,7 +89,7 @@ export default function NuevaCompraPage() {
         {/* Factura */}
         <div className="border border-slate-200 dark:border-slate-800 rounded-lg p-4 bg-slate-50 dark:bg-slate-800/60">
           <label className="flex items-center gap-2 text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">
-            <input type="checkbox" checked={tieneFactura} onChange={e => { setTieneFactura(e.target.checked); if (!e.target.checked) setFotoFactura(null); }} />
+            <input type="checkbox" className="accent-blue-600" checked={tieneFactura} onChange={e => { setTieneFactura(e.target.checked); if (!e.target.checked) setFotoFactura(null); }} />
             ¿Tiene factura?
           </label>
           {tieneFactura && (
@@ -105,12 +105,12 @@ export default function NuevaCompraPage() {
         <div className="border border-slate-200 dark:border-slate-800 rounded-lg p-4 bg-slate-50 dark:bg-slate-800/60">
           <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Tipo de pago *</label>
           <div className="flex gap-4 flex-wrap mb-2">
-            <label className="flex items-center gap-2 text-sm">
-              <input type="radio" name="pago" checked={tipoPago === 'fisico'} onChange={() => { setTipoPago('fisico'); setFotoQr(null); }} />
+            <label className="flex items-center gap-2 text-sm dark:text-slate-200">
+              <input type="radio" name="pago" className="accent-blue-600" checked={tipoPago === 'fisico'} onChange={() => { setTipoPago('fisico'); setFotoQr(null); }} />
               Pago físico (efectivo)
             </label>
-            <label className="flex items-center gap-2 text-sm">
-              <input type="radio" name="pago" checked={tipoPago === 'qr'} onChange={() => setTipoPago('qr')} />
+            <label className="flex items-center gap-2 text-sm dark:text-slate-200">
+              <input type="radio" name="pago" className="accent-blue-600" checked={tipoPago === 'qr'} onChange={() => setTipoPago('qr')} />
               Transferencia QR
             </label>
           </div>

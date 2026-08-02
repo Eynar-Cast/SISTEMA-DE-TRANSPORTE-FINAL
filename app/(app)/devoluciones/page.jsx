@@ -117,12 +117,12 @@ export default function DevolucionesPage() {
             <div className="mb-4">
               <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Reembolso — Tipo *</label>
               <div className="flex gap-4 flex-wrap">
-                <label className="flex items-center gap-2 text-sm">
-                  <input type="radio" checked={tipoPago === 'fisico'} onChange={() => { setTipoPago('fisico'); setComprobante(null); }} />
+                <label className="flex items-center gap-2 text-sm dark:text-slate-200">
+                  <input type="radio" className="accent-blue-600" checked={tipoPago === 'fisico'} onChange={() => { setTipoPago('fisico'); setComprobante(null); }} />
                   Cobro físico (efectivo)
                 </label>
-                <label className="flex items-center gap-2 text-sm">
-                  <input type="radio" checked={tipoPago === 'transferencia'} onChange={() => setTipoPago('transferencia')} />
+                <label className="flex items-center gap-2 text-sm dark:text-slate-200">
+                  <input type="radio" className="accent-blue-600" checked={tipoPago === 'transferencia'} onChange={() => setTipoPago('transferencia')} />
                   Transferencia bancaria
                 </label>
               </div>
