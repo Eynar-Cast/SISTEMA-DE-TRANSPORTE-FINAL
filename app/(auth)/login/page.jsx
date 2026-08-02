@@ -40,11 +40,14 @@ export default function LoginPage() {
   }
 
   return (
-    <div
-      className="relative min-h-screen flex items-center justify-center p-4
-                 bg-gradient-to-br from-blue-950 via-blue-900 to-blue-600
-                 md:bg-none md:bg-[url('/imagenes/login.jpg')] md:bg-cover md:bg-center md:bg-no-repeat"
-    >
+    <div className="relative min-h-screen flex items-center justify-center p-4 overflow-hidden">
+      {/* Fondo degradado en móvil */}
+      <div className="absolute inset-0 md:hidden bg-gradient-to-br from-blue-950 via-blue-900 to-blue-600" />
+      {/* Fondo imagen solo en escritorio */}
+      <div
+        className="absolute inset-0 hidden md:block bg-cover bg-center bg-no-repeat"
+        style={{ backgroundImage: "url('/imagenes/login.jpg')" }}
+      />
       {/* Capa translúcida solo en escritorio, para que la imagen no compita con la tarjeta */}
       <div className="hidden md:block absolute inset-0 bg-blue-950/20" />
 
