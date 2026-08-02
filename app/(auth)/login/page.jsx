@@ -40,8 +40,15 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-950 via-blue-900 to-blue-600 p-4">
-      <div className="w-full max-w-sm bg-white dark:bg-slate-900 rounded-xl p-8 shadow-lg border border-slate-200 dark:border-slate-800">
+    <div
+      className="relative min-h-screen flex items-center justify-center p-4
+                 bg-gradient-to-br from-blue-950 via-blue-900 to-blue-600
+                 md:bg-none md:bg-[url('/imagenes/login.jpg')] md:bg-cover md:bg-center md:bg-no-repeat"
+    >
+      {/* Capa translúcida solo en escritorio, para que la imagen no compita con la tarjeta */}
+      <div className="hidden md:block absolute inset-0 bg-blue-950/20" />
+
+      <div className="relative z-10 w-full max-w-sm bg-white dark:bg-slate-900 rounded-xl p-8 shadow-lg border border-slate-200 dark:border-slate-800">
         <div className="text-center mb-8">
           <div className="w-14 h-14 bg-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-4 text-2xl">
             🏭
