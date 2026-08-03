@@ -1,5 +1,6 @@
 'use client';
 import { useState, useEffect, useCallback } from 'react';
+import ConfirmModal from '@/components/ui/ConfirmModal';
 
 function fmtFecha(iso) {
   return new Date(iso).toLocaleDateString('es-BO', { day: '2-digit', month: '2-digit', year: 'numeric' });
@@ -20,6 +21,10 @@ export default function UsuariosPage() {
   const [modalPass, setModalPass] = useState(null); // usuario seleccionado
   const [pass1, setPass1] = useState('');
   const [pass2, setPass2] = useState('');
+
+  // Confirmación antes de desactivar
+  const [confirmarToggle, setConfirmarToggle] = useState(null);
+  const [toggleCargando, setToggleCargando] = useState(false);
 
   const cargar = useCallback(async () => {
     try {
@@ -59,14 +64,21 @@ export default function UsuariosPage() {
 
   async function toggleUsuario(u) {
     if (u.activo) {
-      const ok = window.confirm(`¿Seguro que deseas desactivar a "${u.nombre}"? Ya no podrá iniciar sesión. Puedes reactivarla después.`);
-      if (!ok) return;
+      setConfirmarToggle(u);
+      return;
     }
+    await ejecutarToggle(u);
+  }
+
+  async function ejecutarToggle(u) {
+    setToggleCargando(true);
     await fetch(`/api/usuarios/${u.id}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ accion: 'toggle' }),
     });
+    setToggleCargando(false);
+    setConfirmarToggle(null);
     await cargar();
   }
 
@@ -231,6 +243,15 @@ export default function UsuariosPage() {
           </div>
         </div>
       )}
+    <ConfirmModal
+        abierto={!!confirmarToggle}
+        titulo="Desactivar usuario"
+        mensaje={`¿Seguro que deseas desactivar a "${confirmarToggle?.nombre}"? Ya no podrá iniciar sesión. Puedes reactivarla después.`}
+        confirmarTexto="Desactivar"
+        cargando={toggleCargando}
+        onCancelar={() => setConfirmarToggle(null)}
+        onConfirmar={() => ejecutarToggle(confirmarToggle)}
+      />
     </div>
   );
 }
