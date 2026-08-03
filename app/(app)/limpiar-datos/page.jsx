@@ -119,6 +119,39 @@ export default function LimpiarDatosPage() {
         )}
       </div>
 
+      {stats?.respaldosAutomaticos?.length > 0 && (
+        <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-5 mb-5">
+          <h2 className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1">
+            Respaldos automáticos anteriores
+          </h2>
+          <p className="text-xs text-slate-500 dark:text-slate-400 mb-3">
+            Copias que el sistema guardó solo, cada vez que se hizo una limpieza — úsalas si alguna vez pierdes tu descarga manual.
+          </p>
+          <ul className="divide-y divide-slate-100 dark:divide-slate-800">
+            {stats.respaldosAutomaticos.map((r) => (
+              <li key={r.url} className="py-2 flex items-center justify-between gap-3">
+                <div>
+                  <div className="text-sm text-slate-700 dark:text-slate-300">
+                    {new Date(r.fecha).toLocaleDateString('es-BO', { day: '2-digit', month: '2-digit', year: 'numeric' })}
+                    {' '}
+                    {new Date(r.fecha).toLocaleTimeString('es-BO', { hour: '2-digit', minute: '2-digit' })}
+                  </div>
+                  <div className="text-xs text-slate-400">{(r.tamano / 1024).toFixed(0)} KB</div>
+                </div>
+                <a
+                  href={r.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-xs font-medium text-blue-600 dark:text-blue-400 hover:underline whitespace-nowrap"
+                >
+                  Descargar
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
       {resultado && (
         <div className="mb-5 p-4 rounded-xl bg-green-50 dark:bg-green-950/40 border border-green-200 dark:border-green-900">
           <p className="font-semibold text-green-800 dark:text-green-300 mb-1">✅ Limpieza completada</p>
@@ -128,6 +161,16 @@ export default function LimpiarDatosPage() {
             <li>• {resultado.gastosEliminados} gastos de chofer eliminados</li>
             <li>• {resultado.fotosEliminadas} fotos eliminadas de almacenamiento{resultado.fotosConError > 0 ? ` (${resultado.fotosConError} no se pudieron borrar, probablemente ya no existían)` : ''}</li>
           </ul>
+          {resultado.respaldoUrl && (
+            <a
+              href={resultado.respaldoUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-block mt-2 text-sm font-medium text-green-800 dark:text-green-300 underline"
+            >
+              🔒 Ver respaldo automático guardado antes de la limpieza
+            </a>
+          )}
         </div>
       )}
 
