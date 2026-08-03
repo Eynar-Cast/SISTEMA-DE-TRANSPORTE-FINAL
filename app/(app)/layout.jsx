@@ -27,6 +27,7 @@ const NAV_ADMIN = [
   { href: '/gastos-choferes', label: 'Gastos choferes', icon: '📋' },
   { href: '/usuarios', label: 'Usuarios', icon: '👥' },
   { href: '/exportar', label: 'Exportar Datos', icon: '⬇️' },
+  { href: '/limpiar-datos', label: 'Limpiar Base de Datos', icon: '🗑️' },
 ];
 
 export default async function AppLayout({ children }) {
