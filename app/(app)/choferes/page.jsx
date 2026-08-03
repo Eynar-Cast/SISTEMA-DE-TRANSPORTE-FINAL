@@ -66,8 +66,12 @@ export default function ChoferesPage() {
     await cargarChoferes();
   }
 
-  async function toggleChofer(id) {
-    const res = await fetch(`/api/choferes/${id}`, {
+  async function toggleChofer(c) {
+    if (c.activo) {
+      const ok = window.confirm(`¿Seguro que deseas desactivar a "${c.nombre}" (placa ${c.placa})? No podrá registrarse gastos nuevos. Puedes reactivarlo después.`);
+      if (!ok) return;
+    }
+    const res = await fetch(`/api/choferes/${c.id}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ accion: 'toggle' }),
@@ -135,7 +139,7 @@ export default function ChoferesPage() {
                     </td>
                     <td className="px-4 py-3">
                       <div className="flex gap-2">
-                        <button onClick={() => toggleChofer(c.id)}
+                        <button onClick={() => toggleChofer(c)}
                           className={`px-3 py-1.5 rounded-lg text-xs font-medium ${c.activo ? 'bg-red-100 text-red-600 dark:bg-red-900/40 dark:text-red-300 hover:bg-red-200 dark:bg-red-900/40 dark:text-red-300 dark:hover:bg-red-900/60' : 'bg-green-100 text-green-700 hover:bg-green-200 dark:bg-green-900/40 dark:text-green-300 dark:hover:bg-green-900/60'}`}>
                           {c.activo ? 'Desactivar' : 'Activar'}
                         </button>

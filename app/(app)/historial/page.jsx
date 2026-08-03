@@ -8,6 +8,8 @@ const FILTROS = [
   { key: 'todo', label: 'Todo' },
 ];
 
+const UMBRAL_LIMPIEZA = 500;
+
 function fmt(n) { return 'Bs. ' + Number(n).toFixed(2); }
 function fmtFecha(iso) { return new Date(iso).toLocaleDateString('es-BO', { day: '2-digit', month: '2-digit', year: 'numeric' }); }
 function fmtFechaHora(iso) {
@@ -33,7 +35,9 @@ export default function HistorialPage() {
   const [userId, setUserId] = useState('');
   const [desde, setDesde] = useState('');
   const [hasta, setHasta] = useState('');
+  const [busqueda, setBusqueda] = useState('');
   const [cargando, setCargando] = useState(true);
+  const [totalCompras, setTotalCompras] = useState(0);
 
   const [detalle, setDetalle] = useState(null);
   const [cargandoDetalle, setCargandoDetalle] = useState(false);
@@ -48,6 +52,7 @@ export default function HistorialPage() {
     try {
       const params = new URLSearchParams();
       if (userId) params.set('userId', userId);
+      if (busqueda) params.set('q', busqueda);
       if (desde || hasta) {
         if (desde) params.set('desde', desde);
         if (hasta) params.set('hasta', hasta);
@@ -56,17 +61,17 @@ export default function HistorialPage() {
       }
       const res = await fetch(`/api/compras?${params.toString()}`);
       const data = await res.json();
-      if (res.ok) setCompras(data.compras);
+      if (res.ok) { setCompras(data.compras); setTotalCompras(data.total); }
     } catch {
       // silencioso: se conservan los datos previos
     }
     setCargando(false);
-  }, [filtro, userId, desde, hasta]);
+  }, [filtro, userId, desde, hasta, busqueda]);
 
   useEffect(() => { cargarCompras(); }, [cargarCompras]);
 
   function limpiarFiltros() {
-    setFiltro('todo'); setUserId(''); setDesde(''); setHasta('');
+    setFiltro('todo'); setUserId(''); setDesde(''); setHasta(''); setBusqueda('');
   }
 
   async function verDetalle(id) {
@@ -114,6 +119,16 @@ export default function HistorialPage() {
 
       <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-4 mb-4 flex gap-3 flex-wrap items-end print:hidden">
         <div>
+          <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Buscar producto</label>
+          <input
+            type="text"
+            value={busqueda}
+            onChange={e => setBusqueda(e.target.value)}
+            placeholder="Buscar por nombre..."
+            className="w-56 px-3 py-2 border border-slate-300 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 dark:placeholder:text-slate-500 rounded-lg text-sm"
+          />
+        </div>
+        <div>
           <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Usuario</label>
           <select value={userId} onChange={e => setUserId(e.target.value)} className="w-40 px-3 py-2 border border-slate-300 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 rounded-lg text-sm">
             <option value="">Todos</option>
@@ -130,6 +145,25 @@ export default function HistorialPage() {
         </div>
         <button onClick={limpiarFiltros} className="px-3 py-2 rounded-lg text-sm font-medium bg-slate-200 text-slate-700 dark:text-slate-300 dark:bg-slate-700 dark:text-slate-200 hover:bg-slate-300 dark:hover:bg-slate-600">Limpiar</button>
       </div>
+
+      {totalCompras >= UMBRAL_LIMPIEZA && (
+        <div className="mb-5 p-4 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-300 dark:border-amber-800 flex items-start gap-3">
+          <div className="text-2xl">🧹</div>
+          <div className="flex-1">
+            <p className="font-semibold text-amber-800 dark:text-amber-200">Es hora de limpiar</p>
+            <p className="text-sm text-amber-700 dark:text-amber-300 mt-0.5">
+              El sistema acumula <span className="font-bold">{totalCompras.toLocaleString()}</span> compras (umbral de {UMBRAL_LIMPIEZA.toLocaleString()}).
+              Considera hacer una limpieza para mantener el rendimiento. No olvides descargar tus respaldos antes.
+            </p>
+          </div>
+          <a
+            href="/limpiar-datos"
+            className="px-3 py-1.5 rounded-lg text-sm font-medium bg-amber-600 hover:bg-amber-700 text-white whitespace-nowrap mt-0.5"
+          >
+            Ir a limpiar
+          </a>
+        </div>
+      )}
 
       <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 mb-5">
         <StatCard icon="📦" label="Total compras" valor={compras.length} />

@@ -11,6 +11,7 @@ export async function GET(request) {
   const userId = searchParams.get('userId') || '';
   const desde = searchParams.get('desde') || '';
   const hasta = searchParams.get('hasta') || '';
+  const q = searchParams.get('q') || '';
 
   // No se devuelven foto_factura/foto_qr en el listado: son data URLs de hasta 5MB
   // que no se usan en las tablas (solo el detalle las necesita).
@@ -26,6 +27,11 @@ export async function GET(request) {
     sql += ` AND user_id = $${params.length}`;
   }
 
+  if (q) {
+    params.push(`%${q}%`);
+    sql += ` AND (producto ILIKE $${params.length} OR descripcion ILIKE $${params.length})`;
+  }
+
   if (desde || hasta) {
     if (desde) { params.push(desde); sql += ` AND fecha >= $${params.length}::date`; }
     if (hasta) { params.push(hasta); sql += ` AND fecha < ($${params.length}::date + interval '1 day')`; }
@@ -38,7 +44,17 @@ export async function GET(request) {
   sql += ' ORDER BY fecha DESC';
 
   const compras = await query(sql, params);
-  return NextResponse.json({ compras });
+
+  // Total de compras (ignora filtros de fecha/producto) para el aviso de limpieza.
+  let totalSql = `SELECT COUNT(*)::int AS total FROM compras WHERE 1=1`;
+  const totalParams = [];
+  if (sesion.role !== 'admin') {
+    totalParams.push(sesion.id);
+    totalSql += ` AND user_id = $${totalParams.length}`;
+  }
+  const [totalRow] = await query(totalSql, totalParams);
+
+  return NextResponse.json({ compras, total: totalRow?.total || 0 });
 }
 
 export async function POST(request) {

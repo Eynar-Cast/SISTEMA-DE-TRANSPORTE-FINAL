@@ -57,8 +57,12 @@ export default function UsuariosPage() {
     await cargar();
   }
 
-  async function toggleUsuario(id) {
-    await fetch(`/api/usuarios/${id}`, {
+  async function toggleUsuario(u) {
+    if (u.activo) {
+      const ok = window.confirm(`¿Seguro que deseas desactivar a "${u.nombre}"? Ya no podrá iniciar sesión. Puedes reactivarla después.`);
+      if (!ok) return;
+    }
+    await fetch(`/api/usuarios/${u.id}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ accion: 'toggle' }),
@@ -133,7 +137,7 @@ export default function UsuariosPage() {
                     <td className="px-4 py-3 text-sm text-slate-500 dark:text-slate-400 dark:text-slate-500">{fmtFecha(u.creado)}</td>
                     <td className="px-4 py-3">
                       <div className="flex gap-2">
-                        <button onClick={() => toggleUsuario(u.id)}
+                        <button onClick={() => toggleUsuario(u)}
                           className={`px-3 py-1.5 rounded-lg text-xs font-medium ${u.activo ? 'bg-red-100 text-red-600 dark:bg-red-900/40 dark:text-red-300 hover:bg-red-200 dark:bg-red-900/40 dark:text-red-300 dark:hover:bg-red-900/60' : 'bg-green-100 text-green-700 hover:bg-green-200 dark:bg-green-900/40 dark:text-green-300 dark:hover:bg-green-900/60'}`}>
                           {u.activo ? 'Desactivar' : 'Activar'}
                         </button>

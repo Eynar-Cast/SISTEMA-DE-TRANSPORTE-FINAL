@@ -33,6 +33,7 @@ function StatCard({ icon, label, valor }) {
 export default function MisComprasPage() {
   const [filtro, setFiltro] = useState('dia');
   const [compras, setCompras] = useState([]);
+  const [busqueda, setBusqueda] = useState('');
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState('');
 
@@ -43,7 +44,10 @@ export default function MisComprasPage() {
 
   const cargarCompras = useCallback(async () => {
     try {
-      const res = await fetch(`/api/compras?periodo=${filtro}`);
+      const params = new URLSearchParams();
+      params.set('periodo', filtro);
+      if (busqueda) params.set('q', busqueda);
+      const res = await fetch(`/api/compras?${params.toString()}`);
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Error al cargar');
       setCompras(data.compras);
@@ -52,7 +56,7 @@ export default function MisComprasPage() {
       setError(err.message);
     }
     setCargando(false);
-  }, [filtro]);
+  }, [filtro, busqueda]);
 
   useEffect(() => { cargarCompras(); }, [cargarCompras]);
 
@@ -98,6 +102,16 @@ export default function MisComprasPage() {
       </div>
 
       {error && <div className="mb-4 p-3 rounded-lg bg-red-100 text-red-600 dark:bg-red-900/40 dark:text-red-300 text-sm">{error}</div>}
+
+      <div className="mb-4">
+        <input
+          type="text"
+          value={busqueda}
+          onChange={e => setBusqueda(e.target.value)}
+          placeholder="🔍 Buscar por nombre de producto..."
+          className="w-full sm:w-72 px-3 py-2 border border-slate-300 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 dark:placeholder:text-slate-500 rounded-lg text-sm"
+        />
+      </div>
 
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-5">
         <StatCard icon="📦" label="Compras" valor={compras.length} />
